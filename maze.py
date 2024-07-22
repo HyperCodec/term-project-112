@@ -58,7 +58,6 @@ def isNodeValid(app, row, col):
     ncount = 0
 
     # these loops might be the cause of those clump things.
-    # TODO maybe try similar to `findNeighbors`
     for drow in range(-1, 2):
         for dcol in range(-1, 2):
             nrow, ncol = row+drow, col+dcol
