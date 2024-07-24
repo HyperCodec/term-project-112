@@ -57,7 +57,6 @@ def isNodeValid(app, row, col):
     # counts the filled neighbors
     ncount = 0
 
-    # these loops might be the cause of those clump things.
     for drow in range(-1, 2):
         for dcol in range(-1, 2):
             nrow, ncol = row+drow, col+dcol
@@ -82,3 +81,7 @@ def isNodeValid(app, row, col):
 def isCellInBounds(app, row, col):
     return (row >= 0 and row < app.rows and
             col >= 0 and col < app.cols)
+
+
+def getRowColFromCoordinate(app, pos):
+    return pos.y // app.cell_size, pos.x // app.cell_size

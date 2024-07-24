@@ -1,4 +1,6 @@
 from maze import generateMaze
+from player import Player
+from engine.camera import Camera
 from cmu_graphics import *
 
 
@@ -16,33 +18,16 @@ def resetGame(app):
     generateMaze(app)
     print("Finished generating maze")
 
-
-def onKeyPress(app, key):
-    if key == 'r':
-        resetGame(app)
+    app.player = Player()
+    app.camera = Camera()
 
 
 def redrawAll(app):
-    drawGrid(app)
-
-
-def drawGrid(app):
-    for row in range(len(app.grid)):
-        for col in range(len(app.grid[row])):
-            left, top = getCellLeftTop(app, row, col)
-
-            fill = 'white' if app.grid[row, col] else 'black'
-
-            drawRect(left, top, app.cell_size, app.cell_size,
-                     fill=fill)
-
-
-def getCellLeftTop(app, row, col):
-    return col * app.cell_size, row * app.cell_size
+    app.camera.render_frame(app)
 
 
 def main():
-    runApp(width=1100, height=800)
+    runAppWithScreens(initialScreen='maze_algo_debug', width=1100, height=800)
 
 
 if __name__ == "__main__":
