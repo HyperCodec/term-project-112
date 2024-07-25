@@ -1,5 +1,5 @@
 from PIL import Image
-from camera import CameraRenderable
+from engine.camera import CameraRenderable
 from cmu_graphics import drawImage, CMUImage
 
 

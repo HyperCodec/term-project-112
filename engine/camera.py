@@ -13,6 +13,9 @@ class Camera:
     def get_screen_coords(self, pos):
         return pos - self.pos
 
+    def get_full_coords_from_screen(self, screen_pos):
+        return screen_pos + self.pos
+
     def follow_player(self, app):
         player_screen_pos = self.get_screen_coords(app.player.pos)
 
@@ -28,6 +31,29 @@ class Camera:
         obj.render(app, screen_pos)
 
         return screen_pos
+
+    # draws a vector from the near grid corners
+    # to the edge of the screen, then draws a black
+    # polygon to obscure that part of the maze.
+    def trace_polygon_view_boundaries(self, app):
+        pass
+
+    def render_grid_around_player(self, app):
+        pass
+
+    def render_player(self, app):
+        pass
+
+    def render_enemies(self, app):
+        pass
+
+    def render_frame(self, app):
+        self.render_player(app)
+        self.render_enemies(app)
+
+        self.render_grid_around_player(app)
+
+        self.trace_polygon_view_boundaries(app)
 
 
 class CameraRenderable:
