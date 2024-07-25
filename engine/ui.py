@@ -92,7 +92,7 @@ class PersistentRect(RectCollider, PersistentRender):
 
 class PersistentLabel(PersistentRender):
     def __init__(self, text, pos, **kwargs):
-        super().__init__(pos)
+        self.pos = pos
 
         self.text = text
         self.kwargs = kwargs
@@ -137,3 +137,9 @@ class DoubleRectButton(Hoverable, Clickable, PersistentRender):
     def render(self, app):
         self.collider.render(app)
         self.label.render(app)
+
+
+def register_button(app, button):
+    app.ui_click_manager.register_clickable(button)
+    app.ui_hover_manager.register_hoverable(button)
+    app.camera.prm.register_render(button)
