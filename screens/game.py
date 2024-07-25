@@ -28,6 +28,11 @@ def registerAnimations(app):
 
 def game_onAppStart(app):
     app.stepsPerSecond = 60
+
+    app.cell_size = 50
+    app.rows = app.height // app.cell_size
+    app.cols = app.width // app.cell_size
+
     resetGame(app)
 
 
