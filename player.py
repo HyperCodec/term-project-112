@@ -1,5 +1,7 @@
 from engine.vector import Vec2
 
+PLAYER_MOVE_SPEED = 10
+
 
 class Player:
     def __init__(self, pos=None, health=100):
@@ -9,6 +11,6 @@ class Player:
         self.pos = pos
         self.health = health
 
-    def move(self, app, vec):
-        self.pos += vec
+    def move(self, app, vec, dt):
+        self.pos += vec * PLAYER_MOVE_SPEED * dt
         app.camera.follow_player(app)

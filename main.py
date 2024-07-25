@@ -2,8 +2,9 @@ from maze import generateMaze
 from player import Player
 from engine.camera import Camera
 from cmu_graphics import *
+from screens.maze_algo_debug import *
 
-
+"""
 def onAppStart(app):
     print("App started")
     app.setMaxShapeCount(10000)
@@ -24,6 +25,7 @@ def resetGame(app):
 
 def redrawAll(app):
     app.camera.render_frame(app)
+"""
 
 
 def main():

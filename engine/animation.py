@@ -75,3 +75,17 @@ class AnimationSelection(CameraRenderable):
 
     def render(self, app, screen_pos):
         self.current_animation.render(app, screen_pos)
+
+
+# stores aliases to animations that are contained in other objects
+# and updates them during onStep
+class AnimationTicker:
+    def __init__(self):
+        self.animations = []
+
+    def register_animation(self, animation):
+        self.animations.append(animation)
+
+    def tick(self, dt):
+        for animation in self.animations:
+            animation.tick(dt)

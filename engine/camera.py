@@ -1,4 +1,4 @@
-from vector import Vec2
+from engine.vector import Vec2
 
 FOLLOW_MARGIN = 50
 
@@ -26,6 +26,8 @@ class Camera:
     def render_object(self, obj, app, absolute_pos):
         screen_pos = self.get_screen_coords(absolute_pos)
         obj.render(app, screen_pos)
+
+        return screen_pos
 
 
 class CameraRenderable:

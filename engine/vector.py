@@ -1,3 +1,5 @@
+# no idea how this spaghetti worked first try
+# (aside from a few typos) but it somehow did
 class VecN:
     def __init__(self, **kwargs):
         self._known_keys = kwargs.keys()
@@ -87,17 +89,36 @@ class VecN:
 
         return self._perform_vec_op(other, lambda a, b: a - b)
 
-    def __mul_(self, other):
+    def __mul__(self, other):
         if not isinstance(other, VecN):
             return self._perform_op(lambda v: v * other)
 
         return self._perform_vec_op(other, lambda a, b: a * b, 1)
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         if not isinstance(other, VecN):
             return self._perform_op(other, lambda v: v / other)
 
         return self._perform_vec_op(other, lambda a, b: a / b, 1)
+
+    def __floordiv__(self, other):
+        if not isinstance(other, VecN):
+            return self._perform_op(other, lambda a, b: a // b)
+
+        return self._perform_vec_op(other, lambda a, b: a // b, 1)
+
+    def __pow__(self, other):
+        if not isinstance(other, VecN):
+            return self._perform_op(other, lambda a, b: a ** b)
+
+        # keeps normal, consistent values if length mismatch
+        def pow_handle_mismatch(a, b):
+            if a is None or b is None:
+                return a if b is None else b
+
+            return a ** b
+
+        return self._perform_vec_op(other, pow_handle_mismatch, None)
 
     def distanceSquared(self):
         dsq = 0
@@ -115,6 +136,15 @@ class VecN:
     def normalize(self):
         magnitude = self.distance()
         return self / magnitude
+
+    def is_zero(self):
+        for key in self._known_keys:
+            val = getattr(self, key)
+
+            if val != 0:
+                return False
+
+        return True
 
 
 def twoObjectSort(a, b):
