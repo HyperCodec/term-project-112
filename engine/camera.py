@@ -1,4 +1,5 @@
 from engine.vector import Vec2
+from cmu_graphics import drawRect
 
 FOLLOW_MARGIN = 50
 
@@ -40,7 +41,16 @@ class Camera:
         pass
 
     def render_grid_around_player(self, app):
-        pass
+        # this function is the main source of problems.
+        for row in range(app.rows):
+            for col in range(app.cols):
+                cell_pos = Vec2(col, row) * app.cell_size
+                screen_pos = self.get_screen_coords(cell_pos)
+
+                fill = None if app.grid[row, col] else 'black'
+
+                drawRect(screen_pos.x, screen_pos.y,
+                         app.cell_size, app.cell_size, fill=fill)
 
     def render_player(self, app):
         pass

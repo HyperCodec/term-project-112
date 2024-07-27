@@ -14,6 +14,9 @@ def resetGame(app):
 
     app.player = Player()
     app.camera = Camera()
+
+    app.camera.prm.register_render(app.player)
+
     app.time = TimeManager()
     app.animations = AnimationTicker()
 
@@ -27,17 +30,18 @@ def registerAnimations(app):
 
 
 def game_onAppStart(app):
-    app.stepsPerSecond = 60
+    # app.stepsPerSecond = 60
 
-    app.cell_size = 50
-    app.rows = app.height // app.cell_size
-    app.cols = app.width // app.cell_size
+    app.rows = 25
+    app.cols = 25
+    app.cell_size = 200
 
     resetGame(app)
 
 
 def game_onStep(app):
     dt = app.time.delta_seconds()
+    # print(f"frametime: {dt}")
 
     # animations and such
     app.animations.tick(dt)
@@ -63,6 +67,7 @@ def game_onKeyPress(app, key):
 
 def game_onKeyHold(app, keys):
     dt = app.time.delta_seconds()
+
     movement = Vec2(0, 0)
 
     if 'right' in keys:
@@ -82,6 +87,12 @@ def game_onKeyHold(app, keys):
 
     app.player.move(app, movement, dt)
 
+    print(f"new player pos: {app.player.pos}")
+    print(f"new camera pos: {app.camera.pos}")
+
 
 def game_redrawAll(app):
-    pass
+    # takes a long time to render a frame.
+    # not sure exactly why other than maybe maze
+    # or CMU renderer itself when objects are drawn.
+    app.camera.render_frame(app)
