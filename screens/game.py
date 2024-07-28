@@ -87,8 +87,8 @@ def game_onKeyHold(app, keys):
 
     app.player.move(app, movement, dt)
 
-    print(f"new player pos: {app.player.pos}")
-    print(f"new camera pos: {app.camera.pos}")
+    # print(f"new player pos: {app.player.pos}")
+    # print(f"new camera pos: {app.camera.pos}")
 
 
 def game_redrawAll(app):
