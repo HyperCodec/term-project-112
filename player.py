@@ -29,8 +29,7 @@ class Player(PersistentRender):
         next_pos = self.pos + vec
 
         # really spaghetti way of handling all this but it works.
-        # TODO fix collisions with corners. also breaks on the bottom border
-        # with index out of bounds for some reason.
+        # TODO fix collisions with corners.
         if next_pos.x < PLAYER_COLLIDER_RADIUS:
             vec.x = -self.pos.x + PLAYER_OFFSET_FROM_WALL + PLAYER_COLLIDER_RADIUS
         elif next_pos.x >= app.cols*app.cell_size - PLAYER_COLLIDER_RADIUS:
@@ -53,7 +52,7 @@ class Player(PersistentRender):
 
         if next_pos.y < PLAYER_COLLIDER_RADIUS:
             vec.y = -self.pos.y + PLAYER_OFFSET_FROM_WALL + PLAYER_COLLIDER_RADIUS
-        elif next_pos.x >= app.rows*app.cell_size - PLAYER_COLLIDER_RADIUS:
+        elif next_pos.y >= app.rows*app.cell_size - PLAYER_COLLIDER_RADIUS:
             vec.y = app.rows*app.cell_size - PLAYER_COLLIDER_RADIUS - \
                 PLAYER_OFFSET_FROM_WALL - self.pos.y
         elif (next_pos.y - PLAYER_COLLIDER_RADIUS) // app.cell_size != current_row:
