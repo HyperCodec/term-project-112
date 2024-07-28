@@ -151,7 +151,7 @@ class DoubleRectButton(Hoverable, Clickable, PersistentRender):
         self.label.render(app)
 
 
-def register_button(app, button):
+def registerButton(app, button):
     app.ui_click_manager.register_clickable(button)
     app.ui_hover_manager.register_hoverable(button)
     app.camera.prm.register_render(button)

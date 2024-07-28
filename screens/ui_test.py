@@ -16,7 +16,7 @@ def ui_test_onAppStart(app):
     # bad way of doing stuff but too lazy to write class rn
     setattr(button, "on_click", on_click)
 
-    register_button(app, button)
+    registerButton(app, button)
 
 
 def ui_test_onMousePress(app, mouseX, mouseY):
