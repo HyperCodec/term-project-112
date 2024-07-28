@@ -41,7 +41,7 @@ def game_onAppStart(app):
 
 def game_onStep(app):
     dt = app.time.delta_seconds()
-    # print(f"frametime: {dt}")
+    print(f"frametime: {dt}")
 
     # animations and such
     app.animations.tick(dt)

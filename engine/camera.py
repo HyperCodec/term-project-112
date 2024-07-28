@@ -49,7 +49,7 @@ class Camera:
 
                 fill = None if app.grid[row, col] else 'black'
 
-                drawRect(screen_pos.x, screen_pos.y,
+                drawRect(screen_pos.x.item(), screen_pos.y.item(),
                          app.cell_size, app.cell_size, fill=fill)
 
     def render_player(self, app):

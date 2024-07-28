@@ -20,4 +20,4 @@ class Player(PersistentRender):
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(self.pos)
 
-        drawCircle(screen_pos.x, screen_pos.y, 60)
+        drawCircle(screen_pos.x.item(), screen_pos.y.item(), 60)
