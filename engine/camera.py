@@ -1,5 +1,5 @@
 from engine.vector import Vec2
-from cmu_graphics import drawRect, drawImage
+from cmu_graphics import drawRect, drawImage, drawPolygon
 
 PLAYER_FOLLOW_MARGIN = 200
 
@@ -36,11 +36,35 @@ class Camera:
 
         return screen_pos
 
-    # draws a vector from the near grid corners
-    # to the edge of the screen, then draws a black
-    # polygon to obscure that part of the maze.
+    # draws a black polygon to obscure the maze where it
+    # would not be visible if it were first-person.
     def trace_polygon_view_boundaries(self, app):
         pass
+
+    def draw_view_boundary(self, app, corner):
+        player_screen_pos = self.get_screen_coords(app, app.player.pos)
+        screen_edge = 0 if corner.x < player_screen_pos.x else app.width
+        remaining_screen_width = screen_edge - player_screen_pos.x
+
+        direction = (corner - player_screen_pos).normalize()
+
+        # make a vector of width `remaining_screen_width` with the same slope
+        # as the vector from player to corner. this is then added to the
+        # player's location to get the endpoint of the vector, which is the
+        # next point of the triangle that is being drawn.
+        multiplier = remaining_screen_width / direction.x
+        edge_translation = direction * multiplier
+
+        second_point = player_screen_pos + edge_translation
+
+        # third point will essentially make it a right triangle by being
+        # either at the top or bottom of the screen at the corner's x position.
+        third_point_y = 0 if corner.y < player_screen_pos.y else app.height
+        third_point = Vec2(corner.x, third_point_y)
+
+        drawPolygon(corner.x.item(), corner.y.item(),
+                    second_point.x.item(), second_point.y.item(),
+                    third_point.x.item(), third_point.y.item())
 
     def render_grid_around_player(self, app):
         screen_pos = self.get_screen_coords(app, Vec2(0, 0))
