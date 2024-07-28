@@ -43,8 +43,15 @@ class VecN:
     def __repr__(self):
         return f"VecN({', '.join(self.data.astype(str))})"
 
+    def distanceSquared(self):
+        return self.data.dot(self.data)
+
+    def distance(self):
+        return np.sqrt(self.distanceSquared())
+
     def normalize(self):
-        return VecN(np.linalg.vector_norm(self.data))
+        magnitude = self.distance()
+        return self / magnitude
 
     def is_zero(self):
         return not np.any(self.data)
