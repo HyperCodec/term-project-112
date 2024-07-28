@@ -42,7 +42,7 @@ def game_onAppStart(app):
 
 def game_onStep(app):
     dt = app.time.delta_seconds()
-    print(f"frametime: {dt}")
+    # print(f"frametime: {dt}")
 
     # animations and such
     app.animations.tick(dt)
@@ -67,8 +67,6 @@ def game_onKeyPress(app, key):
 
 
 def game_onKeyHold(app, keys):
-    dt = app.time.delta_seconds()
-
     movement = Vec2(0, 0)
 
     if 'right' in keys:
@@ -86,10 +84,10 @@ def game_onKeyHold(app, keys):
     if movement.is_zero():
         return
 
-    app.player.move(app, movement, dt)
+    app.player.move(app, movement)
 
-    # print(f"new player pos: {app.player.pos}")
-    # print(f"new camera pos: {app.camera.pos}")
+    print(f"new player pos: {app.player.pos}")
+    print(f"new camera pos: {app.camera.pos}")
 
 
 def game_redrawAll(app):
