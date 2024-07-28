@@ -1,7 +1,7 @@
 from engine.vector import Vec2
 from cmu_graphics import drawRect, drawImage
 
-FOLLOW_MARGIN = 50
+FOLLOW_MARGIN = 100
 
 
 class Camera:
@@ -13,20 +13,19 @@ class Camera:
         self.prm = PersistentRenderManager()
 
     def get_screen_coords(self, pos):
-        return pos - self.pos
+        return pos - self.pos*2
 
     def get_full_coords_from_screen(self, screen_pos):
-        return screen_pos + self.pos
+        return screen_pos + self.pos*2
 
-    def follow_player(self, app):
+    def follow_player(self, app, moved):
         player_screen_pos = self.get_screen_coords(app.player.pos)
 
         if not (player_screen_pos.x <= FOLLOW_MARGIN or player_screen_pos.y <= FOLLOW_MARGIN
                 or player_screen_pos.x >= app.width - FOLLOW_MARGIN or player_screen_pos.y >= app.height - FOLLOW_MARGIN):
             return
 
-        amount_to_move = player_screen_pos - Vec2(app.width, app.height)
-        self.pos += amount_to_move
+        self.pos += moved
 
     def render_object(self, obj, app, absolute_pos):
         screen_pos = self.get_screen_coords(absolute_pos)

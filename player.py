@@ -16,7 +16,7 @@ class Player(PersistentRender):
     def move(self, app, vec):
         vec = vec * PLAYER_MOVE_SPEED  # * dt
         self.pos += vec
-        app.camera.follow_player(app)
+        app.camera.follow_player(app, vec)
 
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(self.pos)
