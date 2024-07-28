@@ -137,12 +137,13 @@ class SingleRectButton(Hoverable, Clickable, UIElement):
         self.label.render(app)
 
 
-class DoubleRectButton(Hoverable, Clickable, PersistentRender):
+class DoubleRectButton(Hoverable, Clickable, UIElement):
     def __init__(self, label, normal_prect, hovered_prect):
         super().__init__(normal_prect)
         self.normal_prect = normal_prect
         self.hovered_prect = hovered_prect
         self.label = label
+        self.visible = True
 
     def on_start_hover(self):
         self.collider = self.hovered_prect
@@ -151,8 +152,31 @@ class DoubleRectButton(Hoverable, Clickable, PersistentRender):
         self.collider = self.normal_prect
 
     def render(self, app):
+        if not self.visible:
+            return
+
         self.collider.render(app)
         self.label.render(app)
+
+
+class PercentageBar(UIElement):
+    def __init__(self, pos, max_width, height, inner_kwargs, outer_kwargs, starting_percentage=0):
+        self.percentage = starting_percentage
+        self.max_width = max_width
+        self.height = height
+        self.pos = pos
+        self.inner_kwargs = inner_kwargs
+        self.outer_kwargs = outer_kwargs
+        self.outer_kwargs['border'] = self.outer_kwargs.get('border', 'black')
+
+    def render(self, app):
+        # inner
+        drawRect(self.pos.x.item(), self.pos.y.item(), max(
+            self.percentage * self.max_width, 1), self.height, **self.inner_kwargs)
+
+        # outer
+        drawRect(self.pos.x.item(), self.pos.y.item(), self.max_width,
+                 self.height, fill=None, **self.outer_kwargs)
 
 
 def registerButton(app, button):

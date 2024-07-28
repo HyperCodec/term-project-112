@@ -6,6 +6,7 @@ from maze import getRowColFromCoordinate
 PLAYER_MOVE_SPEED = 3
 PLAYER_COLLIDER_RADIUS = 50
 PLAYER_OFFSET_FROM_WALL = 1e-8
+MAX_STAMINA = 100
 
 
 class Player(PersistentRender):
@@ -15,6 +16,7 @@ class Player(PersistentRender):
 
         self.pos = pos
         self.health = health
+        self.stamina = MAX_STAMINA
 
     def move(self, app, vec):
         vec *= PLAYER_MOVE_SPEED  # * dt

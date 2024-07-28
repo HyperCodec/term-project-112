@@ -1,10 +1,11 @@
 from cmu_graphics import *
-from player import Player
+from player import Player, MAX_STAMINA
 from engine.camera import Camera
 from maze import generateMaze, renderMazeImage
 from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
+from engine.ui import *
 
 
 def resetGame(app):
@@ -14,9 +15,17 @@ def resetGame(app):
     renderMazeImage(app)
 
     app.player = Player()
+    app.stamina_bar = PercentageBar(
+        Vec2(app.width-160, app.height-50), 150, 25, {'fill': 'skyBlue'}, {'border': 'dodgerBlue'}, 1)
+
+    stamina_label = PersistentLabel(
+        "Stamina", Vec2(app.width-95, app.height-60), fill='skyBlue')
+
     app.camera = Camera()
 
     app.camera.prm.register_render(app.player)
+    app.camera.prm.register_render(app.stamina_bar)
+    app.camera.prm.register_render(stamina_label)
 
     app.time = TimeManager()
     app.animations = AnimationTicker()
@@ -24,6 +33,8 @@ def resetGame(app):
     registerAnimations(app)
 
     app.loss = False
+    app.steps = 0
+    app.was_sprinting = False
 
 
 def registerAnimations(app):
@@ -45,6 +56,13 @@ def game_onStep(app):
     dt = app.time.delta_seconds()
     # print(f"frametime: {dt}")
 
+    app.steps += 1
+
+    if not app.was_sprinting and app.steps % 3 == 0:
+        app.player.stamina = min(app.player.stamina + 1, MAX_STAMINA)
+
+    app.stamina_bar.percentage = app.player.stamina / MAX_STAMINA
+
     # animations and such
     app.animations.tick(dt)
 
@@ -55,6 +73,7 @@ def game_onStep(app):
     # TODO game logic (enemies and such)
 
     app.time.mark_step_end()
+    app.was_sprinting = False
 
 
 def game_onKeyPress(app, key):
@@ -68,6 +87,11 @@ def game_onKeyPress(app, key):
 
 
 def game_onKeyHold(app, keys):
+    # idk why cmu graphics ever thought it was a
+    # good idea to make keys a list, just pressing
+    # too many keys can make it really laggy.
+    keys = set(keys)
+
     movement = Vec2(0, 0)
 
     if 'right' in keys:
@@ -84,6 +108,12 @@ def game_onKeyHold(app, keys):
 
     if movement.is_zero():
         return
+
+    if 'z' in keys:
+        app.was_sprinting = True
+        if app.player.stamina >= 2:
+            movement *= 2
+            app.player.stamina -= 2
 
     app.player.move(app, movement)
 
