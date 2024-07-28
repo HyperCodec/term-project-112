@@ -3,7 +3,7 @@ from engine.camera import CameraRenderable, PersistentRender
 from engine.collider import Collider, RectCollider
 
 
-class UIElement:
+class UIElement(PersistentRender):
     def __init__(self, pos, renderable, visible=True):
         self.pos = pos
         self.renderable = renderable
@@ -115,12 +115,13 @@ class PersistentImage(PersistentRender):
 
 # TODO probably rename these because they would
 # work with non-rect persistents too.
-class SingleRectButton(Hoverable, Clickable, PersistentRender):
+class SingleRectButton(Hoverable, Clickable, UIElement):
     def __init__(self, label, prect, normal_fill, hovered_fill):
         super().__init__(prect)
         self.normal_fill = normal_fill
         self.hovered_fill = hovered_fill
         self.label = label
+        self.visible = True
 
     def on_start_hover(self):
         self.collider.kwargs["fill"] = self.hovered_fill
@@ -129,6 +130,9 @@ class SingleRectButton(Hoverable, Clickable, PersistentRender):
         self.collider.kwargs["fill"] = self.normal_fill
 
     def render(self, app):
+        if not self.visible:
+            return
+
         self.collider.render(app)
         self.label.render(app)
 

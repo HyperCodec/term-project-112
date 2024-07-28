@@ -31,7 +31,7 @@ def registerAnimations(app):
 
 
 def game_onAppStart(app):
-    app.stepsPerSecond = 60
+    # app.stepsPerSecond = 60
 
     app.rows = 25
     app.cols = 25
