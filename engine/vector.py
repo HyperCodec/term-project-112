@@ -59,7 +59,8 @@ class VecN:
     # moved these to superclass bc
     # it constructs an instance of the superclass
     # on each operation instead of the current class itself,
-    # idk any workarounds aside from this ugly code.
+    # idk any workarounds aside from putting this ugly code
+    # in the superclass.
 
     @property
     def x(self):
