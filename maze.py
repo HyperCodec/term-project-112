@@ -1,5 +1,8 @@
 import random
 import numpy as np
+from PIL import Image, ImageDraw
+from cmu_graphics import CMUImage
+from engine.camera import RenderableImage
 
 
 # custom grid-based DFS algorithm. doing it this way instead of
@@ -85,3 +88,22 @@ def isCellInBounds(app, row, col):
 
 def getRowColFromCoordinate(app, pos):
     return pos.y // app.cell_size, pos.x // app.cell_size
+
+
+# optimized maze rendering due to how slow CMU graphics is.
+def renderMazeImage(app):
+    image = Image.new(mode="RGB", size=(
+        app.rows*app.cell_size, app.cols*app.cell_size))
+    draw = ImageDraw.Draw(image)
+
+    for row in range(app.rows):
+        for col in range(app.cols):
+            cell = app.grid[row, col]
+            fill = 0xFFFFFF if cell else 0x000000
+
+            top, left = row*app.cell_size, col*app.cell_size
+            bottom, right = top+app.cell_size, left+app.cell_size
+            draw.rectangle([(left, top), (right, bottom)], fill)
+
+    image = CMUImage(image)
+    app.maze_render = RenderableImage(image)

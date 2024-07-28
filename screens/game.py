@@ -1,7 +1,7 @@
 from cmu_graphics import *
 from player import Player
 from engine.camera import Camera
-from maze import generateMaze
+from maze import generateMaze, renderMazeImage
 from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
@@ -11,6 +11,7 @@ def resetGame(app):
     print("Generating maze")
     generateMaze(app)
     print("Finished generating maze")
+    renderMazeImage(app)
 
     app.player = Player()
     app.camera = Camera()

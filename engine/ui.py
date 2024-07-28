@@ -1,4 +1,4 @@
-from cmu_graphics import drawRect, drawLabel
+from cmu_graphics import drawRect, drawLabel, drawImage
 from engine.camera import CameraRenderable, PersistentRender
 from engine.collider import Collider, RectCollider
 
@@ -86,8 +86,8 @@ class PersistentRect(RectCollider, PersistentRender):
         self.kwargs = kwargs
 
     def render(self, app):
-        drawRect(self.top_left.x, self.top_left.y,
-                 self.shape.x, self.shape.y, **self.kwargs)
+        drawRect(self.top_left.x.item(), self.top_left.y.item(),
+                 self.shape.x.item(), self.shape.y.item(), **self.kwargs)
 
 
 class PersistentLabel(PersistentRender):
@@ -98,7 +98,19 @@ class PersistentLabel(PersistentRender):
         self.kwargs = kwargs
 
     def render(self, app):
-        drawLabel(self.text, self.pos.x, self.pos.y, **self.kwargs)
+        drawLabel(self.text, self.pos.x.item(),
+                  self.pos.y.item(), **self.kwargs)
+
+
+class PersistentImage(PersistentRender):
+    def __init__(self, image, pos, **kwargs):
+        self.pos = pos
+
+        self.image = image
+        self.kwargs = kwargs
+
+    def render(self, app):
+        drawImage(self.pos.x.item(), self.pos.y.item(), **self.kwargs)
 
 
 # TODO probably rename these because they would

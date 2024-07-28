@@ -1,5 +1,5 @@
 from engine.vector import Vec2
-from cmu_graphics import drawRect
+from cmu_graphics import drawRect, drawImage
 
 FOLLOW_MARGIN = 50
 
@@ -41,16 +41,9 @@ class Camera:
         pass
 
     def render_grid_around_player(self, app):
-        # this function is the main source of problems.
-        for row in range(app.rows):
-            for col in range(app.cols):
-                cell_pos = Vec2(col, row) * app.cell_size
-                screen_pos = self.get_screen_coords(cell_pos)
+        screen_pos = self.pos * -1
 
-                fill = None if app.grid[row, col] else 'black'
-
-                drawRect(screen_pos.x.item(), screen_pos.y.item(),
-                         app.cell_size, app.cell_size, fill=fill)
+        app.maze_render.render(app, screen_pos)
 
     def render_player(self, app):
         pass
@@ -79,6 +72,19 @@ class Camera:
 class CameraRenderable:
     def render(self, app, screen_pos):
         pass
+
+
+# probably doesn't belong here,
+# should change to a separate file
+# that makes these rendereable classes.
+class RenderableImage(CameraRenderable):
+    def __init__(self, image, **kwargs):
+        self.image = image
+        self.kwargs = kwargs
+
+    def render(self, app, screen_pos):
+        drawImage(self.image, screen_pos.x.item(),
+                  screen_pos.y.item(), **self.kwargs)
 
 
 # a renderable object that retains its position
