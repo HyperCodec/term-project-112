@@ -1,30 +1,33 @@
 from engine.vector import Vec2
 from cmu_graphics import drawRect, drawImage
 
-FOLLOW_MARGIN = 100
+PLAYER_FOLLOW_MARGIN = 200
 
 
 class Camera:
     def __init__(self, pos=None):
         if pos is None:
-            pos = Vec2(0, 0)
+            pos = Vec2(100, 100)
 
         self.pos = pos
         self.prm = PersistentRenderManager()
 
-    def get_screen_coords(self, pos):
-        return pos - self.pos*2
+    def get_screen_coords(self, app, pos):
+        return pos - self.pos + Vec2(app.width, app.height)/2
 
-    def get_full_coords_from_screen(self, screen_pos):
-        return screen_pos + self.pos*2
+    def get_full_coords_from_screen(self, app, screen_pos):
+        return screen_pos + self.pos - Vec2(app.width, app.height)/2
 
     def follow_player(self, app, moved):
-        player_screen_pos = self.get_screen_coords(app.player.pos)
+        player_screen_pos = self.get_screen_coords(app, app.player.pos)
 
-        if not (player_screen_pos.x <= FOLLOW_MARGIN or player_screen_pos.y <= FOLLOW_MARGIN
-                or player_screen_pos.x >= app.width - FOLLOW_MARGIN or player_screen_pos.y >= app.height - FOLLOW_MARGIN):
+        if not (player_screen_pos.x <= PLAYER_FOLLOW_MARGIN or player_screen_pos.y <= PLAYER_FOLLOW_MARGIN
+                or player_screen_pos.x >= app.width - PLAYER_FOLLOW_MARGIN or player_screen_pos.y >= app.height - PLAYER_FOLLOW_MARGIN):
             return
 
+        # due to using this moved thing, it
+        # moves the camera by the other dimension as
+        # well. TODO fix.
         self.pos += moved
 
     def render_object(self, obj, app, absolute_pos):
@@ -40,7 +43,7 @@ class Camera:
         pass
 
     def render_grid_around_player(self, app):
-        screen_pos = self.pos * -1
+        screen_pos = self.get_screen_coords(app, Vec2(0, 0))
 
         app.maze_render.render(app, screen_pos)
 

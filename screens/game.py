@@ -36,6 +36,7 @@ def game_onAppStart(app):
     app.rows = 25
     app.cols = 25
     app.cell_size = 200
+    app.background = 'black'
 
     resetGame(app)
 
@@ -85,9 +86,6 @@ def game_onKeyHold(app, keys):
         return
 
     app.player.move(app, movement)
-
-    print(f"new player pos: {app.player.pos}")
-    print(f"new camera pos: {app.camera.pos}")
 
 
 def game_redrawAll(app):
