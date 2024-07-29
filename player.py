@@ -106,9 +106,11 @@ class Player(PersistentRender):
         # for some reason without the extra boost, the move
         # doesn't guarantee to put the player a full 50 units away,
         # causing them to be constantly locked in position. I assume
-        # it's floating point errors, but not sure because the distance
-        # is sometimes a pretty long ways away from 50, such as 47.
-        # the bump looks bad and buggy but I can't see a fix.
+        # it's because normalization magnitude is 0.9... instead of 1
+        # due to floating point rounding errors.
+        # the bump looks bad and buggy but I can't see a fix to this problem,
+        # I'd rather have it look buggy than have a chance of softlocking the
+        # player whenever they hit a corner.
         target_pos = corner + corner_relative_direction * \
             (PLAYER_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL + 1.15)
 
