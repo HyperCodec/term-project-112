@@ -1,3 +1,4 @@
+import numpy as np
 from engine.vector import Vec2
 from engine.camera import PersistentRender
 from cmu_graphics import drawCircle
@@ -71,6 +72,18 @@ class Player(PersistentRender):
             if not app.grid[next_row, current_col]:
                 vec.y = next_row*app.cell_size - PLAYER_COLLIDER_RADIUS - \
                     PLAYER_OFFSET_FROM_WALL - self.pos.y
+
+        self.check_corner_collisions(app, vec)
+
+    def check_corner_collisions(self, app, vec):
+        for delta in [Vec2(1, 1), Vec2(1, -1), Vec2(-1, 1), Vec2(-1, -1)]:
+            next_pos = self.pos + vec + delta*PLAYER_COLLIDER_RADIUS
+            next_cell = next_pos // app.cell_size
+
+            cell = app.grid[next_cell.y, next_cell.x]
+
+            if not cell:
+                pass  # TODO
 
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(app, self.pos)
