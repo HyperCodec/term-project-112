@@ -107,7 +107,7 @@ class Player(PersistentRender):
         # doesn't guarantee to put the player a full 50 units away,
         # causing them to be constantly locked in position. I assume
         # it's because normalization magnitude is 0.9... instead of 1
-        # due to floating point rounding errors.
+        # due to floating point precision.
         # the bump looks bad and buggy but I can't see a fix to this problem,
         # I'd rather have it look buggy than have a chance of softlocking the
         # player whenever they hit a corner.
