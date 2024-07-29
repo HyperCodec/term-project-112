@@ -73,20 +73,58 @@ class Player(PersistentRender):
                 vec.y = next_row*app.cell_size - PLAYER_COLLIDER_RADIUS - \
                     PLAYER_OFFSET_FROM_WALL - self.pos.y
 
-        self.check_corner_collisions(app, vec)
+        if vec.is_zero():
+            # prevents a nasty NaN bug
+            return
 
-    def check_corner_collisions(self, app, vec):
-        for delta in [Vec2(1, 1), Vec2(1, -1), Vec2(-1, 1), Vec2(-1, -1)]:
+        self.look_for_diagonal_collisions(app, vec)
+
+    def look_for_diagonal_collisions(self, app, vec):
+        for delta in [Vec2(1, 1), Vec2(-1, 1), Vec2(1, -1), Vec2(-1, -1)]:
             next_pos = self.pos + vec + delta*PLAYER_COLLIDER_RADIUS
             next_cell = next_pos // app.cell_size
 
-            cell = app.grid[next_cell.y, next_cell.x]
+            if next_cell == self.pos // app.cell_size:
+                continue
 
-            if not cell:
-                pass  # TODO
+            self.check_corner_collisions(app, vec, next_cell)
+
+    def check_corner_collisions(self, app, vec, next_cell):
+        corners = getCornersOfCell(app, next_cell.y, next_cell.x)
+        for corner in corners:
+            if (self.pos - corner).distanceSquared() < PLAYER_COLLIDER_RADIUS ** 2:
+                self.fix_corner_collision(app, vec, corner)
+                return
+
+    def fix_corner_collision(self, app, vec, corner):
+        # direction from the corner to the player
+        corner_relative_direction = (self.pos - corner).normalize()
+
+        # get the point closest to the corner without
+        # touching that is along the player's movement axis
+
+        # for some reason without the extra boost, the move
+        # doesn't guarantee to put the player a full 50 units away,
+        # causing them to be constantly locked in position. I assume
+        # it's floating point errors, but not sure because the distance
+        # is sometimes a pretty long ways away from 50, such as 47.
+        # the bump looks bad and buggy but I can't see a fix.
+        target_pos = corner + corner_relative_direction * \
+            (PLAYER_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL + 1.15)
+
+        ideal_move = (target_pos - self.pos)
+
+        # TODO probably some sort of mutating
+        # function for this stuff
+        vec.x = ideal_move.x
+        vec.y = ideal_move.y
 
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(app, self.pos)
 
         drawCircle(screen_pos.x.item(), screen_pos.y.item(),
                    PLAYER_COLLIDER_RADIUS)
+
+
+def getCornersOfCell(app, row, col):
+    return [Vec2(col, row)*app.cell_size, Vec2(col+1, row)*app.cell_size, Vec2(col, row+1)*app.cell_size, Vec2(col+1, row+1)*app.cell_size]

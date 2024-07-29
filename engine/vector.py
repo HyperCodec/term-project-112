@@ -56,6 +56,12 @@ class VecN:
     def is_zero(self):
         return not np.any(self.data)
 
+    def dot(self, other):
+        if not isinstance(other, VecN):
+            return VecN(self.data.dot(other))
+
+        return VecN(self.data.dot(other.data))
+
     # moved these to superclass bc
     # it constructs an instance of the superclass
     # on each operation instead of the current class itself,
