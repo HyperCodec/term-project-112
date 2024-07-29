@@ -21,14 +21,13 @@ class Camera:
     def follow_player(self, app, moved):
         player_screen_pos = self.get_screen_coords(app, app.player.pos)
 
-        if not (player_screen_pos.x <= PLAYER_FOLLOW_MARGIN or player_screen_pos.y <= PLAYER_FOLLOW_MARGIN
-                or player_screen_pos.x >= app.width - PLAYER_FOLLOW_MARGIN or player_screen_pos.y >= app.height - PLAYER_FOLLOW_MARGIN):
-            return
+        if (player_screen_pos.x <= PLAYER_FOLLOW_MARGIN or
+                player_screen_pos.x >= app.width - PLAYER_FOLLOW_MARGIN):
+            self.pos.x += moved.x
 
-        # due to using this moved thing, it
-        # moves the camera by the other dimension as
-        # well. TODO fix.
-        self.pos += moved
+        if (player_screen_pos.y <= PLAYER_FOLLOW_MARGIN or
+                player_screen_pos.y >= app.height - PLAYER_FOLLOW_MARGIN):
+            self.pos.y += moved.y
 
     def render_object(self, obj, app, absolute_pos):
         screen_pos = self.get_screen_coords(absolute_pos)

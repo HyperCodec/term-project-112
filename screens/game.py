@@ -16,7 +16,8 @@ def resetGame(app):
 
     app.player = Player()
     app.stamina_bar = PercentageBar(
-        Vec2(app.width-160, app.height-50), 150, 25, {'fill': 'skyBlue'}, {'border': 'dodgerBlue'}, 1)
+        Vec2(app.width-160, app.height-50), 150, 25, {'fill': 'skyBlue'},
+        {'border': 'dodgerBlue'}, 1)
 
     stamina_label = PersistentLabel(
         "Stamina", Vec2(app.width-95, app.height-60), fill='skyBlue')
