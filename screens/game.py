@@ -210,6 +210,11 @@ def game_onKeyPress(app, key):
     if key == 'm':
         loseGame(app)
 
+    if key == 'g':
+        app.player.pos = Vec2(app.cols-1, app.rows-1) * \
+            app.cell_size + app.cell_size/2
+        app.camera.pos = app.player.pos
+
     # death screen keybinds
     if not app.loss:
         return

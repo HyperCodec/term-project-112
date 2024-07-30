@@ -99,7 +99,11 @@ def renderMazeImage(app):
     for row in range(app.rows):
         for col in range(app.cols):
             cell = app.grid[row, col]
-            fill = 0xFFFFFF if cell else 0x000000
+            fill = 'white' if cell else 'black'
+
+            if (row, col) == (app.rows-1, app.cols-1):
+                # goal cell
+                fill = 'blue'
 
             top, left = row*app.cell_size, col*app.cell_size
             bottom, right = top+app.cell_size, left+app.cell_size

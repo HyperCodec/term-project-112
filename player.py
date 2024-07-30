@@ -1,7 +1,7 @@
 import numpy as np
 from engine.vector import Vec2
 from engine.camera import PersistentRender
-from cmu_graphics import drawCircle
+from cmu_graphics import drawCircle, setActiveScreen
 from maze import getRowColFromCoordinate
 
 PLAYER_MOVE_SPEED = 3
@@ -26,6 +26,9 @@ class Player(PersistentRender):
 
         self.pos += vec
         app.camera.follow_player(app, vec)
+
+        if getRowColFromCoordinate(app, self.pos) == (app.rows-1, app.cols-1):
+            setActiveScreen("win")
 
     def make_move_safe(self, app, vec):
         current_row, current_col = getRowColFromCoordinate(app, self.pos)
