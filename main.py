@@ -4,6 +4,7 @@ from engine.camera import Camera
 from cmu_graphics import *
 from screens.title import *
 from screens.game import *
+from screens.win import *
 
 
 def main():

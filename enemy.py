@@ -10,6 +10,7 @@ from player import PLAYER_COLLIDER_RADIUS
 ENEMY_AGGRO_SPEED = 6
 ENEMY_WANDER_SPEED = 2
 ENEMY_COLLIDER_RADIUS = 20
+ENEMY_AGGRO_RANGE = 5
 
 
 class BasicEnemy(PersistentRender, PathfindingEntity):
@@ -62,9 +63,25 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
             # destination reached, wander to another random point.
             self.select_new_wandering_point(app)
 
+    # based on Bresenham's algorithm
     def has_line_of_sight(self, app):
-        # TODO check whether it can directly see the player
-        return False
+        if (app.player.pos - self.pos).distanceSquared() > ENEMY_AGGRO_RANGE ** 2:
+            return False
+
+        direction = (app.player.pos - self.pos).normalize()
+        step = direction * app.cell_size
+
+        current_pos = self.pos
+
+        while (app.player.pos - current_pos).distanceSquared() > app.cell_size ** 2:
+            current_pos += step
+
+            row, col = getRowColFromCoordinate(app, current_pos)
+
+            if not app.grid[row, col]:
+                return False
+
+        return True
 
     def move(self, app):
         if self.has_line_of_sight(app):
