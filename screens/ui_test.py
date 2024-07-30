@@ -22,18 +22,18 @@ def ui_test_onAppStart(app):
 def ui_test_onMousePress(app, mouseX, mouseY):
     mouse_pos = Vec2(mouseX, mouseY)
 
-    app.ui_click_manager.on_mouse_press(mouse_pos)
+    app.ui_click_manager.on_mouse_press(app, mouse_pos)
 
 
 def ui_test_onMouseMove(app, mouseX, mouseY):
     mouse_pos = Vec2(mouseX, mouseY)
 
-    app.ui_hover_manager.on_mouse_move(mouse_pos)
+    app.ui_hover_manager.on_mouse_move(app, mouse_pos)
 
 
 def ui_test_redrawAll(app):
     app.camera.render_frame(app)
 
 
-def on_click():
+def on_click(_):
     print("hello world")

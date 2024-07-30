@@ -12,6 +12,115 @@ NUM_ENEMIES = 1
 DEBUG_SPECTATE_ENEMY = False
 
 
+class LossMenu(UIElement):
+    def __init__(self, app):
+        self.is_visible = False
+        self.center = Vec2(app.width/2, app.height/2)
+
+        self.size = Vec2(300, 200)
+
+        # probably should make some sort of components API instead
+        # of hardcoding each individual component.
+        top_left = self.center - self.size/2
+        self.background = PersistentRect(
+            top_left,
+            self.size,
+            opacity=50
+        )
+
+        self.you_died = PersistentLabel(
+            "You died",
+            Vec2(self.center.x, self.center.y - self.size.y/3),
+            size=22,
+            fill='red'
+        )
+
+        # back to title button
+        btt_size = Vec2(self.size.x * 2/3, self.size.y/4)
+        btt_top_left = Vec2(self.center.x - btt_size.x/2,
+                            self.center.y + self.size.y/4 - btt_size.y/2)
+        btt_rect = PersistentRect(
+            btt_top_left,
+            btt_size,
+        )
+
+        btt_center = btt_top_left + btt_size/2
+
+        btt_label = PersistentLabel(
+            "Back to title",
+            btt_center,
+            size=16,
+            fill='white'
+        )
+
+        self.back_to_title_btn = BackToTitle(
+            btt_label,
+            btt_rect,
+            'black',
+            'crimson'
+        )
+
+        # restart game button
+        # restart button size is equal to btt_size.
+        restart_top_left = Vec2(
+            btt_top_left.x, btt_top_left.y - btt_size.y - 20)
+        restart_rect = PersistentRect(
+            restart_top_left,
+            btt_size,
+        )
+
+        restart_center = restart_top_left + btt_size/2
+
+        restart_label = PersistentLabel(
+            "Restart game",
+            restart_center,
+            fill='white',
+            size=16
+        )
+
+        self.restart_btn = RestartGame(
+            restart_label,
+            restart_rect,
+            'black',
+            'crimson'
+        )
+
+        app.ui_click_manager.register_clickable(self.back_to_title_btn)
+        app.ui_click_manager.register_clickable(self.restart_btn)
+
+        app.ui_hover_manager.register_hoverable(self.back_to_title_btn)
+        app.ui_hover_manager.register_hoverable(self.restart_btn)
+
+    @property
+    def visible(self):
+        return self.is_visible
+
+    @visible.setter
+    def visible(self, v):
+        self.back_to_title_btn.visible = v
+        self.restart_btn.visible = v
+        self.is_visible = v
+
+    def render(self, app):
+        if not self.is_visible:
+            return
+
+        self.background.render(app)
+        self.you_died.render(app)
+        self.restart_btn.render(app)
+        self.back_to_title_btn.render(app)
+
+
+class BackToTitle(SingleRectButton):
+    def on_click(self, app):
+        setActiveScreen("title")
+
+
+class RestartGame(SingleRectButton):
+    def on_click(self, app):
+        resetGame(app)
+
+
 def resetGame(app):
     print("Generating maze")
     generateMaze(app)
@@ -45,6 +154,12 @@ def resetGame(app):
 
     for _ in range(NUM_ENEMIES):
         spawnEnemyRandomly(app)
+
+    app.ui_click_manager = ClickableElementManager()
+    app.ui_hover_manager = HoverableElementManager()
+
+    app.loss_menu = LossMenu(app)
+    app.camera.prm.register_render(app.loss_menu)
 
 
 def registerAnimations(app):
@@ -91,13 +206,32 @@ def game_onStep(app):
 
 
 def game_onKeyPress(app, key):
+    # testing
+    if key == 'm':
+        loseGame(app)
+
     # death screen keybinds
     if not app.loss:
         return
 
-    if key == 'r':
+    if key == 'r' or key == 'space':
         resetGame(app)
         return
+
+    if key == 't':
+        setActiveScreen('title')
+
+
+def game_onMouseMove(app, mouseX, mouseY):
+    mouse_pos = Vec2(mouseX, mouseY)
+
+    app.ui_hover_manager.on_mouse_move(app, mouse_pos)
+
+
+def game_onMousePress(app, mouseX, mouseY):
+    mouse_pos = Vec2(mouseX, mouseY)
+
+    app.ui_click_manager.on_mouse_press(app, mouse_pos)
 
 
 def game_onKeyHold(app, keys):
@@ -137,3 +271,8 @@ def game_redrawAll(app):
     # not sure exactly why other than maybe maze
     # or CMU renderer itself when objects are drawn.
     app.camera.render_frame(app)
+
+
+def loseGame(app):
+    app.loss = True
+    app.loss_menu.visible = True

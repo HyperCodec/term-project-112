@@ -25,10 +25,10 @@ class ClickableElementManager:
     def register_clickable(self, clickable):
         self.clickables.append(clickable)
 
-    def on_mouse_press(self, mouse_pos):
+    def on_mouse_press(self, app, mouse_pos):
         for clickable in self.clickables:
             if clickable.collider.is_point_colliding(mouse_pos):
-                clickable.on_click()
+                clickable.on_click(app)
 
 
 class HoverableElementManager:
@@ -38,19 +38,19 @@ class HoverableElementManager:
     def register_hoverable(self, hoverable):
         self.hoverables.append(hoverable)
 
-    def on_mouse_move(self, mouse_pos):
+    def on_mouse_move(self, app, mouse_pos):
         for hoverable in self.hoverables:
             if hoverable.collider.is_point_colliding(mouse_pos):
-                hoverable.on_hover()
+                hoverable.on_hover(app)
 
                 if not hoverable.is_hovered:
-                    hoverable.on_start_hover()
+                    hoverable.on_start_hover(app)
 
                 hoverable.is_hovered = True
                 continue
 
             if hoverable.is_hovered:
-                hoverable.on_stop_hover()
+                hoverable.on_stop_hover(app)
 
             hoverable.is_hovered = False
 
@@ -59,7 +59,7 @@ class Clickable:
     def __init__(self, collider):
         self.collider = collider
 
-    def on_click(self):
+    def on_click(self, app):
         pass
 
 
@@ -68,13 +68,13 @@ class Hoverable:
         self.collider = collider
         self.is_hovered = False
 
-    def on_hover(self):
+    def on_hover(self, app):
         pass
 
-    def on_start_hover(self):
+    def on_start_hover(self, app):
         pass
 
-    def on_stop_hover(self):
+    def on_stop_hover(self, app):
         pass
 
 
@@ -123,10 +123,10 @@ class SingleRectButton(Hoverable, Clickable, UIElement):
         self.label = label
         self.visible = True
 
-    def on_start_hover(self):
+    def on_start_hover(self, _app):
         self.collider.kwargs["fill"] = self.hovered_fill
 
-    def on_stop_hover(self):
+    def on_stop_hover(self, _app):
         self.collider.kwargs["fill"] = self.normal_fill
 
     def render(self, app):
@@ -145,10 +145,10 @@ class DoubleRectButton(Hoverable, Clickable, UIElement):
         self.label = label
         self.visible = True
 
-    def on_start_hover(self):
+    def on_start_hover(self, _app):
         self.collider = self.hovered_prect
 
-    def on_stop_hover(self):
+    def on_stop_hover(self, _app):
         self.collider = self.normal_prect
 
     def render(self, app):
