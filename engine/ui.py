@@ -110,7 +110,8 @@ class PersistentImage(PersistentRender):
         self.kwargs = kwargs
 
     def render(self, app):
-        drawImage(self.pos.x.item(), self.pos.y.item(), **self.kwargs)
+        drawImage(self.image, self.pos.x.item(),
+                  self.pos.y.item(), **self.kwargs)
 
 
 # TODO probably rename these because they would

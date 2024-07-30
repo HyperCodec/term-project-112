@@ -8,7 +8,7 @@ from engine.animation import AnimationTicker
 from engine.ui import *
 from enemy import spawnEnemyRandomly
 
-NUM_ENEMIES = 1
+NUM_ENEMIES = 10
 DEBUG_SPECTATE_ENEMY = False
 
 

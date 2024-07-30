@@ -18,12 +18,11 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         self.animation = None  # TODO
 
     def select_new_wandering_point(self, app):
+        source = getRowColFromCoordinate(app, self.pos)
         target = (random.randrange(app.rows), random.randrange(app.cols))
 
-        while not app.grid[target[0], target[1]]:
+        while not app.grid[target[0], target[1]] or target == source:
             target = (random.randrange(app.rows), random.randrange(app.cols))
-
-        source = getRowColFromCoordinate(app, self.pos)
 
         direction_mappings = BFS(
             app, source, target)
@@ -91,7 +90,10 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
 def spawnEnemyRandomly(app):
     row, col = random.randrange(app.rows), random.randrange(app.cols)
 
-    while not app.grid[row, col]:
+    prow, pcol = getRowColFromCoordinate(app, app.player.pos)
+
+    # cannot spawn on an empty cell or within 10 cells of the player.
+    while not app.grid[row, col] or (Vec2(row, col) - Vec2(prow, pcol)).distanceSquared() <= 10:
         row, col = random.randrange(app.rows), random.randrange(app.cols)
 
     actual_pos = Vec2(col*app.cell_size + (app.cell_size/2),
