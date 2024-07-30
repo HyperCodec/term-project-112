@@ -4,6 +4,7 @@ from engine.camera import PersistentRender
 from maze import getRowColFromCoordinate
 from engine.vector import Vec2
 from cmu_graphics import drawCircle
+from player import PLAYER_COLLIDER_RADIUS
 
 ENEMY_AGGRO_SPEED = 6
 ENEMY_WANDER_SPEED = 2
@@ -65,6 +66,10 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         # is not aggro, pathfind to destination
         self.move_toward_destination(app)
 
+        if (app.player.pos - self.pos).distanceSquared() <= \
+                (ENEMY_COLLIDER_RADIUS + PLAYER_COLLIDER_RADIUS) ** 2:
+            loseGame(app)
+
     def is_fully_in_cell(self, app, row, col):
         center_rowcol = getRowColFromCoordinate(app, self.pos)
 
@@ -104,3 +109,8 @@ def spawnEnemyRandomly(app):
 
     app.enemies.append(enemy)
     app.camera.prm.register_render(enemy)
+
+
+def loseGame(app):
+    app.loss = True
+    app.loss_menu.visible = True

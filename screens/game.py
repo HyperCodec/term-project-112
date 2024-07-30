@@ -6,7 +6,7 @@ from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
 from engine.ui import *
-from enemy import spawnEnemyRandomly
+from enemy import spawnEnemyRandomly, loseGame
 
 NUM_ENEMIES = 10
 DEBUG_SPECTATE_ENEMY = False
@@ -235,6 +235,9 @@ def game_onMousePress(app, mouseX, mouseY):
 
 
 def game_onKeyHold(app, keys):
+    if app.loss:
+        return
+
     # idk why cmu graphics ever thought it was a
     # good idea to make keys a list, just pressing
     # too many keys can make it really laggy.
@@ -271,8 +274,3 @@ def game_redrawAll(app):
     # not sure exactly why other than maybe maze
     # or CMU renderer itself when objects are drawn.
     app.camera.render_frame(app)
-
-
-def loseGame(app):
-    app.loss = True
-    app.loss_menu.visible = True
