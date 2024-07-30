@@ -1,25 +1,24 @@
 from maze import findNeighbors, getRowColFromCoordinate
 from engine.vector import Vec2
 
+# idea kind of credit to the guest lecture,
+# was planning on implementing this exact
+# algorithm beforehand anyways though
+
 
 def BFS(app, source, target):
     directional_mappings = {}
-    distance_mappings = {}
-
     frontier = [source]
 
-    cur_dist = 0
     while frontier != []:
         next_frontier = []
 
         for cell in frontier:
-            distance_mappings[cell] = cur_dist
-
             if cell == target:
-                return directional_mappings, distance_mappings
+                return directional_mappings
 
             for neighbor in findNeighbors(app, cell[0], cell[1]):
-                if neighbor in distance_mappings:
+                if not app.grid[int(cell[0]), int(cell[1])] or neighbor in directional_mappings:
                     continue
 
                 next_frontier.append(neighbor)
@@ -27,16 +26,15 @@ def BFS(app, source, target):
                     neighbor, cell)
 
             frontier = next_frontier
-        cur_dist += 1
 
     return None
 
 
-def getPathFromMappings(directional_mappings, distance_mappings, target):
+def getPathFromMappings(directional_mappings, source, target):
     path = []
 
     cur_cell = target
-    while distance_mappings[cur_cell]:
+    while cur_cell != source:
         path.insert(0, cur_cell)
 
         cur_cell = directional_mappings[cur_cell]
@@ -47,23 +45,25 @@ def getPathFromMappings(directional_mappings, distance_mappings, target):
 class PathTweener:
     def __init__(self, path):
         self.path = path
-        self.target_cell = path.popleft()
+        self.target_cell = path.pop(0)
 
     def select_next_cell(self):
-        self.target_cell = self.path.popleft()
+        self.target_cell = self.path.pop(0)
 
     def calculate_direction_to_target(self, app, current_pos):
-        cur_row, cur_col = getRowColFromCoordinate(app, current_pos)
+        target_center = Vec2(self.target_cell[1]*app.cell_size + (
+            app.cell_size/2), self.target_cell[0]*app.cell_size + (app.cell_size/2))
+        direction_raw = (target_center - current_pos).normalize()
 
-        return self.target_cell[0] - cur_row, self.target_cell[1] - cur_col
+        return direction_raw.y, direction_raw.x
 
     def move_toward_target(self, app, speed, parent):
         drow, dcol = self.calculate_direction_to_target(app, parent.pos)
-        mrow, mcol = drow * speed, dcol * speed
+        movement = Vec2(dcol, drow) * speed
 
-        parent.pos += Vec2(mcol, mrow) * app.cell_size
+        parent.pos += movement
 
-        if getRowColFromCoordinate(app, parent.pos) == self.target_cell:
+        if parent.is_fully_in_cell(app, *self.target_cell):
             if self.path == []:
                 return True
             self.select_next_cell()
@@ -74,3 +74,8 @@ class PathTweener:
 def calculateBLineMovement(source, target, speed):
     direction = (target - source).normalize()
     return direction * speed
+
+
+class PathfindingEntity:
+    def is_fully_in_cell(self, app, row, col):
+        pass

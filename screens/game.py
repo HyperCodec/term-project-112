@@ -6,6 +6,10 @@ from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
 from engine.ui import *
+from enemy import spawnEnemyRandomly
+
+NUM_ENEMIES = 1
+DEBUG_SPECTATE_ENEMY = False
 
 
 def resetGame(app):
@@ -36,6 +40,11 @@ def resetGame(app):
     app.loss = False
     app.steps = 0
     app.was_sprinting = False
+
+    app.enemies = []
+
+    for _ in range(NUM_ENEMIES):
+        spawnEnemyRandomly(app)
 
 
 def registerAnimations(app):
@@ -71,10 +80,14 @@ def game_onStep(app):
         # don't keep changing things about the game on a loss
         return
 
-    # TODO game logic (enemies and such)
+    for enemy in app.enemies:
+        enemy.move(app)
 
     app.time.mark_step_end()
     app.was_sprinting = False
+
+    if DEBUG_SPECTATE_ENEMY:
+        app.camera.pos = app.enemies[0].pos
 
 
 def game_onKeyPress(app, key):
