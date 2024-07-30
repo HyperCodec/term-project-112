@@ -160,7 +160,7 @@ class Player(PersistentRender):
         # I'd rather have it look buggy than have a chance of softlocking the
         # player whenever they hit a corner.
         target_pos = corner + corner_relative_direction * \
-            (PLAYER_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL + 1.15)
+            (PLAYER_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL + 1.25)
 
         ideal_move = (target_pos - self.pos)
 
