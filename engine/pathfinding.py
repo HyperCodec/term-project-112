@@ -65,10 +65,10 @@ class PathTweener:
 
         if parent.is_fully_in_cell(app, *self.target_cell):
             if self.path == []:
-                return True
+                return True, (drow, dcol)
             self.select_next_cell()
 
-        return False
+        return False, (drow, dcol)
 
 
 def calculateBLineMovement(source, target, speed):

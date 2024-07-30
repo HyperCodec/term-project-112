@@ -1,6 +1,7 @@
 import random
 from engine.pathfinding import BFS, getPathFromMappings, PathTweener, calculateBLineMovement, PathfindingEntity
 from engine.camera import PersistentRender
+from engine.animation import SpriteSheet, AnimationSelection
 from maze import getRowColFromCoordinate
 from engine.vector import Vec2
 from cmu_graphics import drawCircle
@@ -8,7 +9,7 @@ from player import PLAYER_COLLIDER_RADIUS
 
 ENEMY_AGGRO_SPEED = 6
 ENEMY_WANDER_SPEED = 2
-ENEMY_COLLIDER_RADIUS = 50
+ENEMY_COLLIDER_RADIUS = 30
 
 
 class BasicEnemy(PersistentRender, PathfindingEntity):
@@ -16,7 +17,15 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         self.pos = pos
         self.aggro = False
         self.path_tweener = None
-        self.animation = None  # TODO
+
+        wander_right = SpriteSheet("./assets/enemy-wander.png", 1, 8, 0.1)
+        wander_left = SpriteSheet(
+            "./assets/enemy-wander.png", 1, 8, 0.1, h_flip=True)
+
+        self.animations = AnimationSelection({
+            "wander_right": wander_right,
+            "wander_left": wander_left,
+        }, "wander_right")
 
     def select_new_wandering_point(self, app):
         source = getRowColFromCoordinate(app, self.pos)
@@ -41,8 +50,13 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         self.pos += movement
 
     def move_toward_destination(self, app):
-        completed = self.path_tweener.move_toward_target(
+        completed, (drow, dcol) = self.path_tweener.move_toward_target(
             app, ENEMY_WANDER_SPEED, self)
+
+        if dcol > 0:
+            self.animations.select_animation("wander_right")
+        elif dcol < 0:
+            self.animations.select_animation("wander_left")
 
         if completed:
             # destination reached, wander to another random point.
@@ -88,8 +102,7 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(app, self.pos)
 
-        drawCircle(screen_pos.x.item(), screen_pos.y.item(),
-                   ENEMY_COLLIDER_RADIUS, fill='blue')
+        self.animations.render(app, screen_pos)
 
 
 def spawnEnemyRandomly(app):
@@ -109,6 +122,7 @@ def spawnEnemyRandomly(app):
 
     app.enemies.append(enemy)
     app.camera.prm.register_render(enemy)
+    app.animations.register_animation(enemy.animations)
 
 
 def loseGame(app):

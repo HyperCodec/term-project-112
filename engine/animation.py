@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 from engine.camera import CameraRenderable
 from cmu_graphics import drawImage, CMUImage
 
@@ -23,7 +23,8 @@ class Animation(CameraRenderable):
     def render(self, app, screen_pos):
         frame = self.frames[self.cur_frame]
 
-        drawImage(frame, screen_pos.x, screen_pos.y, align='center')
+        drawImage(frame, screen_pos.x.item(),
+                  screen_pos.y.item(), align='center')
 
 
 class Gif(Animation):
@@ -41,28 +42,31 @@ class Gif(Animation):
 
 
 class SpriteSheet(Animation):
-    def __init__(self, path, rows, cols, frametime, start=0):
+    def __init__(self, path, rows, cols, frametime, start=0, h_flip=False, v_flip=False):
         frames = []
 
         sheet_raw = Image.open(path)
 
-        frame_width = sheet_raw.shape[0] // cols
-        frame_height = sheet_raw.shape[1] // rows
+        frame_width = sheet_raw.size[0] // cols
+        frame_height = sheet_raw.size[1] // rows
 
-        for x in range(0, sheet_raw.shape[0], frame_width):
-            for y in range(0, sheet_raw.shape[1], frame_height):
+        for x in range(0, sheet_raw.size[0], frame_width):
+            for y in range(0, sheet_raw.size[1], frame_height):
                 frame = sheet_raw.crop((
                     x, y, x+frame_width, y+frame_height))
+
+                if h_flip:
+                    frame = ImageOps.mirror(frame)
+
+                if v_flip:
+                    frame = ImageOps.flip(frame)
+
                 frames.append(CMUImage(frame))
 
         super().__init__(frames, frametime, start)
 
 
-# can really make this either CameraRenderable or Animation because
-# of the `tick` override, but I'm using CameraRenderable since the
-# super().__init__() of Animation is completely different and
-# CameraRenderable doesn't define one at all.
-class AnimationSelection(CameraRenderable):
+class AnimationSelection(Animation):
     def __init__(self, animations, starter):
         self.animations = animations
         self.current_animation = self.animations[starter]
