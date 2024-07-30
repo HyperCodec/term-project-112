@@ -185,7 +185,10 @@ def game_onStep(app):
 
     app.stamina_bar.percentage = app.player.stamina / MAX_STAMINA
 
-    # animations and such
+    if app.loss:
+        # don't keep changing things about the game on a loss
+        return
+
     app.animations.tick(dt)
 
     if not app.was_moving:
@@ -193,10 +196,6 @@ def game_onStep(app):
             app.player.animations.select_animation("idle_right")
         else:
             app.player.animations.select_animation("idle_left")
-
-    if app.loss:
-        # don't keep changing things about the game on a loss
-        return
 
     for enemy in app.enemies:
         enemy.move(app)
