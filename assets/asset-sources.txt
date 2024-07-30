@@ -1,3 +1,3 @@
-enemy.png - https://lucky-loops.itch.io/character-satyr
+enemy-*.png - https://lucky-loops.itch.io/character-satyr
 title.png - https://cooltext.com
-player.png -https://snoblin.itch.io/pixel-rpg-free-npc
+player-*.png -https://snoblin.itch.io/pixel-rpg-free-npc

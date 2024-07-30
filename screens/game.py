@@ -144,11 +144,12 @@ def resetGame(app):
     app.time = TimeManager()
     app.animations = AnimationTicker()
 
-    registerAnimations(app)
+    app.animations.register_animation(app.player.animations)
 
     app.loss = False
     app.steps = 0
     app.was_sprinting = False
+    app.was_moving = False
 
     app.enemies = []
 
@@ -160,10 +161,6 @@ def resetGame(app):
 
     app.loss_menu = LossMenu(app)
     app.camera.prm.register_render(app.loss_menu)
-
-
-def registerAnimations(app):
-    pass
 
 
 def game_onScreenActivate(app):
@@ -191,6 +188,12 @@ def game_onStep(app):
     # animations and such
     app.animations.tick(dt)
 
+    if not app.was_moving:
+        if app.player.facing_direction:
+            app.player.animations.select_animation("idle_right")
+        else:
+            app.player.animations.select_animation("idle_left")
+
     if app.loss:
         # don't keep changing things about the game on a loss
         return
@@ -200,6 +203,7 @@ def game_onStep(app):
 
     app.time.mark_step_end()
     app.was_sprinting = False
+    app.was_moving = False
 
     if DEBUG_SPECTATE_ENEMY:
         app.camera.pos = app.enemies[0].pos
@@ -246,15 +250,19 @@ def game_onKeyHold(app, keys):
     movement = Vec2(0, 0)
 
     if 'right' in keys:
+        app.was_moving = True
         movement.x += 1
 
     if 'left' in keys:
+        app.was_moving = True
         movement.x -= 1
 
     if 'up' in keys:
+        app.was_moving = True
         movement.y -= 1
 
     if 'down' in keys:
+        app.was_moving = True
         movement.y += 1
 
     if movement.is_zero():

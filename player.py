@@ -1,11 +1,13 @@
 import numpy as np
+import copy
 from engine.vector import Vec2
 from engine.camera import PersistentRender
 from cmu_graphics import drawCircle, setActiveScreen
 from maze import getRowColFromCoordinate
+from engine.animation import AnimationSelection, SpriteSheet
 
 PLAYER_MOVE_SPEED = 3
-PLAYER_COLLIDER_RADIUS = 30
+PLAYER_COLLIDER_RADIUS = 15
 PLAYER_OFFSET_FROM_WALL = 1e-8
 MAX_STAMINA = 100
 
@@ -18,6 +20,29 @@ class Player(PersistentRender):
         self.pos = pos
         self.health = health
         self.stamina = MAX_STAMINA
+        self.facing_direction = 1
+
+        idle_right = SpriteSheet("./assets/player-idle.png", 1, 2, 0.5)
+        idle_left = SpriteSheet(
+            "./assets/player-idle.png", 1, 2, 0.5, h_flip=True)
+        walk_right = SpriteSheet("./assets/player-walk.png", 1, 4, 0.1)
+        walk_left = SpriteSheet(
+            "./assets/player-walk.png", 1, 4, 0.1, h_flip=True)
+
+        sprint_right = copy.deepcopy(walk_right)
+        sprint_right.frametime = 0.01
+
+        sprint_left = copy.deepcopy(walk_left)
+        sprint_left.frametime = 0.01
+
+        self.animations = AnimationSelection({
+            "idle_right": idle_right,
+            "idle_left": idle_left,
+            "walk_left": walk_left,
+            "walk_right": walk_right,
+            "sprint_right": sprint_right,
+            "sprint_left": sprint_left,
+        }, "idle_right")
 
     def move(self, app, vec):
         vec *= PLAYER_MOVE_SPEED  # * dt
@@ -27,6 +52,27 @@ class Player(PersistentRender):
         self.pos += vec
         app.camera.follow_player(app, vec)
 
+        if vec.x == PLAYER_MOVE_SPEED:
+            self.animations.select_animation("walk_right")
+            self.facing_direction = 1
+        elif vec.x == -PLAYER_MOVE_SPEED:
+            self.animations.select_animation("walk_left")
+            self.facing_direction = 0
+        elif vec.x == PLAYER_MOVE_SPEED*2:
+            self.animations.select_animation("sprint_right")
+            self.facing_direction = 1
+        elif vec.x == PLAYER_MOVE_SPEED*-2:
+            self.animations.select_animation("sprint_left")
+            self.facing_direction = 0
+        else:
+            # if they just move downwards
+            prefix = "walk" if abs(vec.y) == PLAYER_MOVE_SPEED else "sprint"
+
+            if self.facing_direction:
+                self.animations.select_animation(f"{prefix}_right")
+            else:
+                self.animations.select_animation(f"{prefix}_left")
+
         if getRowColFromCoordinate(app, self.pos) == (app.rows-1, app.cols-1):
             setActiveScreen("win")
 
@@ -35,7 +81,6 @@ class Player(PersistentRender):
         next_pos = self.pos + vec
 
         # really spaghetti way of handling all this but it works.
-        # TODO fix collisions with corners.
         if next_pos.x < PLAYER_COLLIDER_RADIUS:
             vec.x = -self.pos.x + PLAYER_OFFSET_FROM_WALL + PLAYER_COLLIDER_RADIUS
         elif next_pos.x >= app.cols*app.cell_size - PLAYER_COLLIDER_RADIUS:
@@ -127,8 +172,7 @@ class Player(PersistentRender):
     def render(self, app):
         screen_pos = app.camera.get_screen_coords(app, self.pos)
 
-        drawCircle(screen_pos.x.item(), screen_pos.y.item(),
-                   PLAYER_COLLIDER_RADIUS)
+        self.animations.render(app, screen_pos)
 
 
 def getCornersOfCell(app, row, col):

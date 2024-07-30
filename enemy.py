@@ -9,7 +9,7 @@ from player import PLAYER_COLLIDER_RADIUS
 
 ENEMY_AGGRO_SPEED = 6
 ENEMY_WANDER_SPEED = 2
-ENEMY_COLLIDER_RADIUS = 30
+ENEMY_COLLIDER_RADIUS = 20
 
 
 class BasicEnemy(PersistentRender, PathfindingEntity):
