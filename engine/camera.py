@@ -29,8 +29,8 @@ class Camera:
                 player_screen_pos.y >= app.height - PLAYER_FOLLOW_MARGIN):
             self.pos.y += moved.y
 
-    def render_object(self, obj, app, absolute_pos):
-        screen_pos = self.get_screen_coords(absolute_pos)
+    def render_object(self, app, obj, absolute_pos):
+        screen_pos = self.get_screen_coords(app, absolute_pos)
         obj.render(app, screen_pos)
 
         return screen_pos
@@ -70,20 +70,10 @@ class Camera:
 
         app.maze_render.render(app, screen_pos)
 
-    def render_player(self, app):
-        pass
-
-    def render_enemies(self, app):
-        pass
-
     def render_persistent(self, app):
         self.prm.render(app)
 
     def render_frame(self, app):
-        # entities
-        self.render_player(app)
-        self.render_enemies(app)
-
         # renders the actual maze
         self.render_grid_around_player(app)
 

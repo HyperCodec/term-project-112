@@ -124,15 +124,11 @@ def renderMazeImage(app):
         app.rows*app.cell_size, app.cols*app.cell_size))
 
     floor_tile_ims = getFloorTileImages()
+    wall_im = Image.open("./assets/maze-sprites/wall.png")
 
     for row in range(app.rows):
         for col in range(app.cols):
             cell = app.grid[row, col]
-
-            if (row, col) == (app.rows-1, app.cols-1):
-                # goal cell
-                fill = 'blue'
-                continue
 
             top, left = row*app.cell_size, col*app.cell_size
             bottom, right = top+app.cell_size, left+app.cell_size
@@ -153,7 +149,20 @@ def renderMazeImage(app):
 
                 continue
 
-            # TODO wall
+            # wall
+
+            # looks awful but I can't
+            # find a good texture and don't
+            # want to spend too much time dealing
+            # with tilemapping bugs
+            for y in range(top, bottom, 50):
+                for x in range(left, right, 50):
+                    tile_top, tile_left = y, x
+
+                    image.paste(wall_im, (
+                        tile_left,
+                        tile_top,
+                    ))
 
     hiding_spot_ims = getHidingSpotImages()
 

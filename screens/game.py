@@ -4,7 +4,7 @@ from engine.camera import Camera
 from maze import generateMaze, renderMazeImage, HIDING_SPOT_COLLIDER_RADIUS
 from engine.time import TimeManager
 from engine.vector import Vec2
-from engine.animation import AnimationTicker
+from engine.animation import AnimationTicker, SpriteSheet
 from engine.ui import *
 from enemy import spawnEnemyRandomly, loseGame
 
@@ -151,6 +151,9 @@ def resetGame(app):
     app.animations = AnimationTicker()
 
     app.animations.register_animation(app.player.animations)
+
+    app.goal_flag = SpriteSheet("./assets/maze-sprites/goal.png", 1, 5, 0.1)
+    app.animations.register_animation(app.goal_flag)
 
     app.loss = False
     app.steps = 0
@@ -304,9 +307,12 @@ def game_redrawAll(app):
     # or CMU renderer itself when objects are drawn.
     app.camera.render_frame(app)
 
+    app.camera.render_object(app, app.goal_flag, Vec2(
+        app.cols-1, app.rows-1)*app.cell_size + app.cell_size/2)
+
     # TODO remove
-    player_pos = app.camera.get_screen_coords(app, app.player.pos)
-    for enemy in app.enemies:
-        enemy_pos = app.camera.get_screen_coords(app, enemy.pos)
-        drawLine(player_pos.x.item(), player_pos.y.item(),
-                 enemy_pos.x.item(), enemy_pos.y.item(), fill='red')
+    #  player_pos = app.camera.get_screen_coords(app, app.player.pos)
+    #  for enemy in app.enemies:
+    #      enemy_pos = app.camera.get_screen_coords(app, enemy.pos)
+    #      drawLine(player_pos.x.item(), player_pos.y.item(),
+    #               enemy_pos.x.item(), enemy_pos.y.item(), fill='red')

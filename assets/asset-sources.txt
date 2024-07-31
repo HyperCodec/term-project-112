@@ -3,4 +3,5 @@ title.png - https://cooltext.com
 player-*.png -https://snoblin.itch.io/pixel-rpg-free-npc
 maze-sprites/hiding-spots/* - https://cainos.itch.io/pixel-art-top-down-basic
 maze-sprites/floor/* - https://gif-superretroworld.itch.io/dungeon-pack
-maze-sprites/wall/* - https://gif-superretroworld.itch.io/dungeon-pack
+maze-sprites/wall.png - https://www.pixilart.com/art/cobblestone-texture-0d6c870dbf3104b
+maze-sprites/goal.png - https://ankousse26.itch.io/free-flag-with-animation
