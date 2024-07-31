@@ -1,3 +1,4 @@
 enemy-*.png - https://lucky-loops.itch.io/character-satyr
 title.png - https://cooltext.com
 player-*.png -https://snoblin.itch.io/pixel-rpg-free-npc
+maze-sprites/* - https://cainos.itch.io/pixel-art-top-down-basic

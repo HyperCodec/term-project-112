@@ -1,7 +1,7 @@
 from cmu_graphics import *
 from player import Player, MAX_STAMINA, PLAYER_COLLIDER_RADIUS
 from engine.camera import Camera
-from maze import generateMaze, renderMazeImage, HIDING_SPOT_SIZE
+from maze import generateMaze, renderMazeImage, HIDING_SPOT_COLLIDER_RADIUS
 from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
@@ -221,7 +221,7 @@ def game_onKeyPress(app, key):
         else:
             for hiding_spot in app.hiding_spots:
                 if (hiding_spot - app.player.pos).distanceSquared() <=  \
-                        (PLAYER_COLLIDER_RADIUS + HIDING_SPOT_SIZE) ** 2:
+                        (PLAYER_COLLIDER_RADIUS + HIDING_SPOT_COLLIDER_RADIUS) ** 2:
                     app.player_hiding = True
                     break
 

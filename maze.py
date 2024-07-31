@@ -1,4 +1,5 @@
 import random
+import os
 import numpy as np
 from PIL import Image, ImageDraw
 from cmu_graphics import CMUImage
@@ -7,6 +8,7 @@ from engine.vector import Vec2
 
 HIDING_SPOT_SIZE = 50
 NUM_HIDING_SPOTS = 20
+HIDING_SPOT_COLLIDER_RADIUS = 30
 
 
 # custom grid-based DFS algorithm. doing it this way instead of
@@ -135,13 +137,31 @@ def renderMazeImage(app):
             bottom, right = top+app.cell_size, left+app.cell_size
             draw.rectangle([(left, top), (right, bottom)], fill)
 
+    hiding_spot_ims = getHidingSpotImages()
+
     for hiding_spot in app.hiding_spots:
         # render hiding spot.
         cx, cy = hiding_spot.x.item(), hiding_spot.y.item()
-        draw.ellipse(
-            [(cx-HIDING_SPOT_SIZE, cy-HIDING_SPOT_SIZE),
-             (cx+HIDING_SPOT_SIZE, cy+HIDING_SPOT_SIZE)],
-            'brown')
+        cx, cy = int(cx), int(cy)
+
+        hs_im = random.choice(hiding_spot_ims)
+        image.paste(hs_im, (
+            cx-HIDING_SPOT_SIZE,
+            cy-HIDING_SPOT_SIZE,
+            cx+HIDING_SPOT_SIZE,
+            cy+HIDING_SPOT_SIZE
+        ), hs_im)  # passed twice to make bg transparent
 
     image = CMUImage(image)
     app.maze_render = RenderableImage(image)
+
+
+def getHidingSpotImages():
+    images = []
+
+    main_dir = "./assets/maze-sprites/hiding-spot/"
+    for path in os.listdir(main_dir):
+        image = Image.open(os.path.join(main_dir, path))
+        images.append(image)
+
+    return images
