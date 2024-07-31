@@ -172,7 +172,7 @@ class Player(PersistentRender):
     def render(self, app):
         if app.player_hiding:
             drawLabel("(You are hiding)", app.width/2,
-                      app.height/2, size=16, fill='gray')
+                      app.height/2, size=25, fill='gray')
             return
 
         screen_pos = app.camera.get_screen_coords(app, self.pos)

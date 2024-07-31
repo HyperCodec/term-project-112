@@ -8,7 +8,7 @@ from engine.vector import Vec2
 from cmu_graphics import drawCircle
 from player import PLAYER_COLLIDER_RADIUS
 
-ENEMY_AGGRO_SPEED = 10
+ENEMY_AGGRO_SPEED = 5
 ENEMY_WANDER_SPEED = 2
 ENEMY_COLLIDER_RADIUS = 20
 ENEMY_AGGRO_RANGE = 300
@@ -112,10 +112,11 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
             self.move_toward_destination(app)
 
             if self.aggro:
-                # was previously aggro, TODO set destination to
-                # a point past the player.
                 self.aggro = False
-                pass
+
+                # was going to make it just run past
+                # the hiding spot but this works fine anyways.
+                self.select_new_wandering_point(app)
 
         if (app.player.pos - self.pos).distanceSquared() <= \
                 (ENEMY_COLLIDER_RADIUS + PLAYER_COLLIDER_RADIUS) ** 2:

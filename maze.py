@@ -6,7 +6,7 @@ from engine.camera import RenderableImage
 from engine.vector import Vec2
 
 HIDING_SPOT_SIZE = 50
-NUM_HIDING_SPOTS = 10
+NUM_HIDING_SPOTS = 20
 
 
 # custom grid-based DFS algorithm. doing it this way instead of
@@ -45,7 +45,10 @@ def generateMaze(app):
     while len(app.hiding_spots) < NUM_HIDING_SPOTS:
         row, col = random.randrange(app.rows), random.randrange(app.cols)
 
-        if not app.grid[row, col]:
+        existing_locs = set(
+            map(lambda v: getRowColFromCoordinate(app, v), app.hiding_spots))
+
+        if not app.grid[row, col] or (row, col) in existing_locs:
             continue
 
         center = Vec2(col*app.cell_size, row*app.cell_size) + app.cell_size/2
