@@ -79,7 +79,7 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
 
     # based on Bresenham's algorithm
     def has_line_of_sight(self, app):
-        if (app.player.pos - self.pos).distanceSquared() > ENEMY_AGGRO_RANGE ** 2:
+        if app.player_hiding or (app.player.pos - self.pos).distanceSquared() > ENEMY_AGGRO_RANGE ** 2:
             return False
 
         direction = (app.player.pos - self.pos).normalize()

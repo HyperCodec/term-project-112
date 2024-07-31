@@ -3,6 +3,10 @@ import numpy as np
 from PIL import Image, ImageDraw
 from cmu_graphics import CMUImage
 from engine.camera import RenderableImage
+from engine.vector import Vec2
+
+HIDING_SPOT_SIZE = 50
+NUM_HIDING_SPOTS = 10
 
 
 # custom grid-based DFS algorithm. doing it this way instead of
@@ -35,6 +39,25 @@ def generateMaze(app):
         random.shuffle(neighbors)
 
         work += neighbors
+
+    app.hiding_spots = []
+
+    while len(app.hiding_spots) < NUM_HIDING_SPOTS:
+        row, col = random.randrange(app.rows), random.randrange(app.cols)
+
+        if not app.grid[row, col]:
+            continue
+
+        center = Vec2(col*app.cell_size, row*app.cell_size) + app.cell_size/2
+
+        offset = Vec2(
+            random.randrange(app.cell_size/2 - HIDING_SPOT_SIZE),
+            random.randrange(app.cell_size/2 - HIDING_SPOT_SIZE)
+        )
+
+        hiding_spot = center + offset
+
+        app.hiding_spots.append(hiding_spot)
 
 
 def findNeighbors(app, row, col):
@@ -108,6 +131,14 @@ def renderMazeImage(app):
             top, left = row*app.cell_size, col*app.cell_size
             bottom, right = top+app.cell_size, left+app.cell_size
             draw.rectangle([(left, top), (right, bottom)], fill)
+
+    for hiding_spot in app.hiding_spots:
+        # render hiding spot.
+        cx, cy = hiding_spot.x.item(), hiding_spot.y.item()
+        draw.ellipse(
+            [(cx-HIDING_SPOT_SIZE, cy-HIDING_SPOT_SIZE),
+             (cx+HIDING_SPOT_SIZE, cy+HIDING_SPOT_SIZE)],
+            'brown')
 
     image = CMUImage(image)
     app.maze_render = RenderableImage(image)

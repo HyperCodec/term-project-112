@@ -1,7 +1,7 @@
 from cmu_graphics import *
-from player import Player, MAX_STAMINA
+from player import Player, MAX_STAMINA, PLAYER_COLLIDER_RADIUS
 from engine.camera import Camera
-from maze import generateMaze, renderMazeImage
+from maze import generateMaze, renderMazeImage, HIDING_SPOT_SIZE
 from engine.time import TimeManager
 from engine.vector import Vec2
 from engine.animation import AnimationTicker
@@ -162,6 +162,8 @@ def resetGame(app):
     app.loss_menu = LossMenu(app)
     app.camera.prm.register_render(app.loss_menu)
 
+    app.player_hiding = False
+
 
 def game_onScreenActivate(app):
     # app.stepsPerSecond = 60
@@ -213,6 +215,16 @@ def game_onKeyPress(app, key):
     if key == 'm':
         loseGame(app)
 
+    if key == 'f':
+        if app.player_hiding:
+            app.player_hiding = False
+        else:
+            for hiding_spot in app.hiding_spots:
+                if (hiding_spot - app.player.pos).distanceSquared() <=  \
+                        (PLAYER_COLLIDER_RADIUS + HIDING_SPOT_SIZE) ** 2:
+                    app.player_hiding = True
+                    break
+
     # death screen keybinds
     if not app.loss:
         return
@@ -238,7 +250,7 @@ def game_onMousePress(app, mouseX, mouseY):
 
 
 def game_onKeyHold(app, keys):
-    if app.loss:
+    if app.loss or app.player_hiding:
         return
 
     # idk why cmu graphics ever thought it was a

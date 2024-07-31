@@ -2,7 +2,7 @@ import numpy as np
 import copy
 from engine.vector import Vec2
 from engine.camera import PersistentRender
-from cmu_graphics import drawCircle, setActiveScreen
+from cmu_graphics import drawLabel, setActiveScreen
 from maze import getRowColFromCoordinate
 from engine.animation import AnimationSelection, SpriteSheet
 
@@ -170,10 +170,20 @@ class Player(PersistentRender):
         vec.y = ideal_move.y
 
     def render(self, app):
+        if app.player_hiding:
+            drawLabel("(You are hiding)", app.width/2,
+                      app.height/2, size=16, fill='gray')
+            return
+
         screen_pos = app.camera.get_screen_coords(app, self.pos)
 
         self.animations.render(app, screen_pos)
 
 
 def getCornersOfCell(app, row, col):
-    return [Vec2(col, row)*app.cell_size, Vec2(col+1, row)*app.cell_size, Vec2(col, row+1)*app.cell_size, Vec2(col+1, row+1)*app.cell_size]
+    return [
+        Vec2(col, row)*app.cell_size,
+        Vec2(col+1, row)*app.cell_size,
+        Vec2(col, row+1)*app.cell_size,
+        Vec2(col+1, row+1)*app.cell_size
+    ]
