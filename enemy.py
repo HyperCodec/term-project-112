@@ -57,12 +57,16 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
 
         movement = calculateBLineMovement(self.pos, target, ENEMY_AGGRO_SPEED)
 
+        self.aggro_avoid_walls(app, movement)
         self.pos += movement
 
         if movement.x > 0:
             self.animations.select_animation("chase_right")
         elif movement.x < 0:
             self.animations.select_animation("chase_left")
+
+    def aggro_avoid_walls(self, app, vec):
+        pass
 
     def move_toward_destination(self, app):
         completed, (drow, dcol) = self.path_tweener.move_toward_target(
@@ -77,30 +81,8 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
             # destination reached, wander to another random point.
             self.select_new_wandering_point(app)
 
-    # based on Bresenham's algorithm
-    def has_line_of_sight(self, app):
-        if app.player_hiding or (app.player.pos - self.pos).distanceSquared() > ENEMY_AGGRO_RANGE ** 2:
-            return False
-
-        direction = (app.player.pos - self.pos).normalize()
-        step = direction * app.cell_size
-
-        current_pos = self.pos
-
-        while (app.player.pos - current_pos).distanceSquared() > app.cell_size ** 2:
-            current_pos += step
-
-            row, col = getRowColFromCoordinate(app, current_pos)
-
-            # no idea why sometimes it doesn't return an int,
-            # floor division is weird.
-            if not app.grid[int(row), int(col)]:
-                return False
-
-        return True
-
     def move(self, app):
-        if self.has_line_of_sight(app):
+        if hasLineOfSight(app, self.pos, app.player.pos):
             self.aggro = True
             self.aggro_chase(app)
 
@@ -166,3 +148,26 @@ def spawnEnemyRandomly(app):
 def loseGame(app):
     app.loss = True
     app.loss_menu.visible = True
+
+
+# based on Bresenham's algorithm
+def hasLineOfSight(app, source, target):
+    if app.player_hiding or (target - source).distanceSquared() > ENEMY_AGGRO_RANGE ** 2:
+        return False
+
+    direction = (target - source).normalize()
+    step = direction * app.cell_size
+
+    current_pos = source
+
+    while (target - current_pos).distanceSquared() > app.cell_size ** 2:
+        current_pos += step
+
+        row, col = getRowColFromCoordinate(app, current_pos)
+
+        # no idea why sometimes it doesn't return an int,
+        # floor division is weird.
+        if not app.grid[int(row), int(col)]:
+            return False
+
+    return True

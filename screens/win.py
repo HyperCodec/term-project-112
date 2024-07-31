@@ -46,7 +46,7 @@ def win_onScreenActivate(app):
 
     registerButton(app, title_button)
 
-    app.background = 'white'
+    app.background = 'gray'
 
 
 def win_onMouseMove(app, mouseX, mouseY):

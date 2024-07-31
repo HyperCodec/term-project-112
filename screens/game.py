@@ -297,3 +297,10 @@ def game_redrawAll(app):
     # not sure exactly why other than maybe maze
     # or CMU renderer itself when objects are drawn.
     app.camera.render_frame(app)
+
+
+    # TODO remove
+    player_pos = app.camera.get_screen_coords(app, app.player.pos)
+    for enemy in app.enemies:
+        enemy_pos = app.camera.get_screen_coords(app, enemy.pos)
+        drawLine(player_pos.x.item(), player_pos.y.item(), enemy_pos.x.item(), enemy_pos.y.item(), fill='red')
