@@ -122,20 +122,38 @@ def getRowColFromCoordinate(app, pos):
 def renderMazeImage(app):
     image = Image.new(mode="RGB", size=(
         app.rows*app.cell_size, app.cols*app.cell_size))
-    draw = ImageDraw.Draw(image)
+
+    floor_tile_ims = getFloorTileImages()
 
     for row in range(app.rows):
         for col in range(app.cols):
             cell = app.grid[row, col]
-            fill = 'white' if cell else 'black'
 
             if (row, col) == (app.rows-1, app.cols-1):
                 # goal cell
                 fill = 'blue'
+                continue
 
             top, left = row*app.cell_size, col*app.cell_size
             bottom, right = top+app.cell_size, left+app.cell_size
-            draw.rectangle([(left, top), (right, bottom)], fill)
+
+            if cell:
+                # tiled flooring
+
+                for y in range(top, bottom, 50):
+                    for x in range(left, right, 50):
+                        tile_top, tile_left = y, x
+
+                        tile_im = random.choice(floor_tile_ims)
+
+                        image.paste(tile_im, (
+                            tile_left,
+                            tile_top,
+                        ))
+
+                continue
+
+            # TODO wall
 
     hiding_spot_ims = getHidingSpotImages()
 
@@ -160,6 +178,18 @@ def getHidingSpotImages():
     images = []
 
     main_dir = "./assets/maze-sprites/hiding-spot/"
+    for path in os.listdir(main_dir):
+        image = Image.open(os.path.join(main_dir, path))
+        images.append(image)
+
+    return images
+
+
+def getFloorTileImages():
+    images = []
+
+    main_dir = "./assets/maze-sprites/floor"
+
     for path in os.listdir(main_dir):
         image = Image.open(os.path.join(main_dir, path))
         images.append(image)
