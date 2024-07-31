@@ -46,6 +46,8 @@ def win_onScreenActivate(app):
 
     registerButton(app, title_button)
 
+    app.background = 'white'
+
 
 def win_onMouseMove(app, mouseX, mouseY):
     mouse_pos = Vec2(mouseX, mouseY)

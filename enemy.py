@@ -1,4 +1,5 @@
 import random
+import copy
 from engine.pathfinding import BFS, getPathFromMappings, PathTweener, calculateBLineMovement, PathfindingEntity
 from engine.camera import PersistentRender
 from engine.animation import SpriteSheet, AnimationSelection
@@ -7,10 +8,10 @@ from engine.vector import Vec2
 from cmu_graphics import drawCircle
 from player import PLAYER_COLLIDER_RADIUS
 
-ENEMY_AGGRO_SPEED = 6
+ENEMY_AGGRO_SPEED = 10
 ENEMY_WANDER_SPEED = 2
 ENEMY_COLLIDER_RADIUS = 20
-ENEMY_AGGRO_RANGE = 5
+ENEMY_AGGRO_RANGE = 300
 
 
 class BasicEnemy(PersistentRender, PathfindingEntity):
@@ -23,9 +24,17 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         wander_left = SpriteSheet(
             "./assets/enemy-wander.png", 1, 8, 0.1, h_flip=True)
 
+        chase_right = copy.deepcopy(wander_right)
+        chase_right.frametime = 0.01
+
+        chase_left = copy.deepcopy(wander_left)
+        chase_left.frametime = 0.01
+
         self.animations = AnimationSelection({
             "wander_right": wander_right,
             "wander_left": wander_left,
+            "chase_right": chase_right,
+            "chase_left": chase_left
         }, "wander_right")
 
     def select_new_wandering_point(self, app):
@@ -49,6 +58,11 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         movement = calculateBLineMovement(self.pos, target, ENEMY_AGGRO_SPEED)
 
         self.pos += movement
+
+        if movement.x > 0:
+            self.animations.select_animation("chase_right")
+        elif movement.x < 0:
+            self.animations.select_animation("chase_left")
 
     def move_toward_destination(self, app):
         completed, (drow, dcol) = self.path_tweener.move_toward_target(
@@ -78,7 +92,9 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
 
             row, col = getRowColFromCoordinate(app, current_pos)
 
-            if not app.grid[row, col]:
+            # no idea why sometimes it doesn't return an int,
+            # floor division is weird.
+            if not app.grid[int(row), int(col)]:
                 return False
 
         return True
@@ -87,15 +103,19 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
         if self.has_line_of_sight(app):
             self.aggro = True
             self.aggro_chase(app)
-            return
 
-        if self.aggro:
-            # was previously aggro, TODO set destination to
-            # a point past the player.
-            pass
+            if not self.aggro:
+                # TODO play some angry noise
+                pass
+        else:
+            # is not aggro, pathfind to destination
+            self.move_toward_destination(app)
 
-        # is not aggro, pathfind to destination
-        self.move_toward_destination(app)
+            if self.aggro:
+                # was previously aggro, TODO set destination to
+                # a point past the player.
+                self.aggro = False
+                pass
 
         if (app.player.pos - self.pos).distanceSquared() <= \
                 (ENEMY_COLLIDER_RADIUS + PLAYER_COLLIDER_RADIUS) ** 2:
@@ -128,7 +148,7 @@ def spawnEnemyRandomly(app):
     prow, pcol = getRowColFromCoordinate(app, app.player.pos)
 
     # cannot spawn on an empty cell or within 10 cells of the player.
-    while not app.grid[row, col] or (Vec2(row, col) - Vec2(prow, pcol)).distanceSquared() <= 10:
+    while not app.grid[row, col] or (Vec2(row, col) - Vec2(prow, pcol)).distanceSquared() <= 5:
         row, col = random.randrange(app.rows), random.randrange(app.cols)
 
     actual_pos = Vec2(col*app.cell_size + (app.cell_size/2),

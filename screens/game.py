@@ -248,6 +248,10 @@ def game_onKeyHold(app, keys):
 
     movement = Vec2(0, 0)
 
+    # idk why, but sometimes holding up prevents
+    # counter strafing. there is nothing in the code that could
+    # suggest that happening, might just be cmu graphics
+    # doing its thing.
     if 'right' in keys:
         app.was_moving = True
         movement.x += 1
