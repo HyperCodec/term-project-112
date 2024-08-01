@@ -5,13 +5,13 @@ from engine.camera import PersistentRender
 from engine.animation import SpriteSheet, AnimationSelection
 from maze import getRowColFromCoordinate
 from engine.vector import Vec2
-from cmu_graphics import drawCircle
 from player import PLAYER_COLLIDER_RADIUS, PLAYER_OFFSET_FROM_WALL
+from engine.sound import loadSound, findVolumeDistanceModifier
 
 ENEMY_AGGRO_SPEED = 5
 ENEMY_WANDER_SPEED = 2
 ENEMY_COLLIDER_RADIUS = 20
-ENEMY_AGGRO_RANGE = 300
+ENEMY_AGGRO_RANGE = 600
 
 
 class BasicEnemy(PersistentRender, PathfindingEntity):
@@ -126,11 +126,16 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
             self.aggro_chase(app)
 
             if not self.aggro:
-                # TODO play some angry noise
-                pass
+                # couldn't find a good angry noise
+                app.aggro_sfx.play(restart=True)
         else:
             # is not aggro, pathfind to destination
             self.move_toward_destination(app)
+
+            if random.randrange(1000) == 1 and (self.pos - app.player.pos).distanceSquared() <= app.width ** 2:
+                # volume = findVolumeDistanceModifier(app, self.pos)
+                # self.sound.play(volume=volume) # :( no sound modifying support
+                app.enemy_ambience.play(restart=True)
 
             if self.aggro:
                 self.aggro = False
@@ -187,6 +192,7 @@ def spawnEnemyRandomly(app):
 def loseGame(app):
     app.loss = True
     app.loss_menu.visible = True
+    app.death_sfx.play()
 
 
 # based on Bresenham's algorithm

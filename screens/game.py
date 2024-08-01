@@ -7,6 +7,7 @@ from engine.vector import Vec2
 from engine.animation import AnimationTicker, SpriteSheet
 from engine.ui import *
 from enemy import spawnEnemyRandomly, loseGame
+from engine.sound import loadSound
 
 NUM_ENEMIES = 10
 DEBUG_SPECTATE_ENEMY = False
@@ -127,6 +128,13 @@ class RestartGame(SingleRectButton):
         resetGame(app)
 
 
+def game_onAppStart(app):
+    app.hide_sfx = loadSound("./assets/foliage.mp3")
+    app.enemy_ambience = loadSound("./assets/enemy-ambience.mp3")
+    app.aggro_sfx = loadSound("./assets/noticed.mp3")
+    app.death_sfx = loadSound("./assets/death.mp3")
+
+
 def resetGame(app):
     print("Generating maze")
     generateMaze(app)
@@ -139,7 +147,7 @@ def resetGame(app):
         {'border': 'dodgerBlue'}, 1)
 
     stamina_label = PersistentLabel(
-        "Stamina", Vec2(app.width-95, app.height-60), fill='skyBlue')
+        "Stamina", Vec2(app.width-85, app.height-60), fill='skyBlue')
 
     app.camera = Camera()
 
@@ -223,11 +231,13 @@ def game_onKeyPress(app, key):
     if key == 'f':
         if app.player_hiding:
             app.player_hiding = False
+            app.hide_sfx.play(restart=True)
         else:
             for hiding_spot in app.hiding_spots:
                 if (hiding_spot - app.player.pos).distanceSquared() <=  \
                         (PLAYER_COLLIDER_RADIUS + HIDING_SPOT_COLLIDER_RADIUS) ** 2:
                     app.player_hiding = True
+                    app.hide_sfx.play(restart=True)
                     break
 
     # death screen keybinds

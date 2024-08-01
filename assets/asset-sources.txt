@@ -5,3 +5,7 @@ maze-sprites/hiding-spots/* - https://cainos.itch.io/pixel-art-top-down-basic
 maze-sprites/floor/* - https://gif-superretroworld.itch.io/dungeon-pack
 maze-sprites/wall.png - https://www.pixilart.com/art/cobblestone-texture-0d6c870dbf3104b
 maze-sprites/goal.png - https://ankousse26.itch.io/free-flag-with-animation
+enemy-ambience.mp3 - https://pixabay.com/sound-effects/cave-monster-43826/
+death.mp3 - https://pixabay.com/sound-effects/monster-bite-44538/
+noticed.mp3 - https://pixabay.com/sound-effects/surprise-sound-effect-99300/
+foliage.mp3 - https://pixabay.com/sound-effects/086374-shaken-bush-40116/

@@ -9,7 +9,7 @@ from engine.animation import AnimationSelection, SpriteSheet
 PLAYER_MOVE_SPEED = 3
 PLAYER_COLLIDER_RADIUS = 15
 PLAYER_OFFSET_FROM_WALL = 1e-8
-MAX_STAMINA = 100
+MAX_STAMINA = 300
 
 
 class Player(PersistentRender):
