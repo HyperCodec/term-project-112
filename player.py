@@ -88,14 +88,14 @@ class Player(PersistentRender):
                 PLAYER_OFFSET_FROM_WALL - self.pos.x
         elif (next_pos.x - PLAYER_COLLIDER_RADIUS) // app.cell_size != current_col:
             left = next_pos.x - PLAYER_COLLIDER_RADIUS
-            next_col = left // app.cell_size
+            next_col = int(left // app.cell_size)
 
             if not app.grid[current_row, next_col]:
                 vec.x = next_col*app.cell_size + app.cell_size + PLAYER_COLLIDER_RADIUS + \
                     PLAYER_OFFSET_FROM_WALL - self.pos.x
         elif (next_pos.x + PLAYER_COLLIDER_RADIUS) // app.cell_size != current_col:
             right = next_pos.x + PLAYER_COLLIDER_RADIUS
-            next_col = right // app.cell_size
+            next_col = int(right // app.cell_size)
 
             if not app.grid[current_row, next_col]:
                 vec.x = next_col*app.cell_size - PLAYER_COLLIDER_RADIUS - \
@@ -108,14 +108,14 @@ class Player(PersistentRender):
                 PLAYER_OFFSET_FROM_WALL - self.pos.y
         elif (next_pos.y - PLAYER_COLLIDER_RADIUS) // app.cell_size != current_row:
             top = next_pos.y - PLAYER_COLLIDER_RADIUS
-            next_row = top // app.cell_size
+            next_row = int(top // app.cell_size)
 
             if not app.grid[next_row, current_col]:
                 vec.y = next_row*app.cell_size + app.cell_size + PLAYER_COLLIDER_RADIUS + \
                     PLAYER_OFFSET_FROM_WALL - self.pos.y
         elif (next_pos.y + PLAYER_COLLIDER_RADIUS) // app.cell_size != current_row:
             bottom = next_pos.y + PLAYER_COLLIDER_RADIUS
-            next_row = bottom // app.cell_size
+            next_row = int(bottom // app.cell_size)
 
             if not app.grid[next_row, current_col]:
                 vec.y = next_row*app.cell_size - PLAYER_COLLIDER_RADIUS - \

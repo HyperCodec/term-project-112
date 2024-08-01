@@ -7,7 +7,7 @@ from engine.camera import RenderableImage
 from engine.vector import Vec2
 
 HIDING_SPOT_SIZE = 50
-NUM_HIDING_SPOTS = 20
+NUM_HIDING_SPOTS = 50
 HIDING_SPOT_COLLIDER_RADIUS = 30
 
 
@@ -115,7 +115,7 @@ def isCellInBounds(app, row, col):
 
 
 def getRowColFromCoordinate(app, pos):
-    return pos.y // app.cell_size, pos.x // app.cell_size
+    return int(pos.y // app.cell_size), int(pos.x // app.cell_size)
 
 
 # optimized maze rendering due to how slow CMU graphics is.
