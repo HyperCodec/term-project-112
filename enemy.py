@@ -6,7 +6,7 @@ from engine.animation import SpriteSheet, AnimationSelection
 from maze import getRowColFromCoordinate
 from engine.vector import Vec2
 from cmu_graphics import drawCircle
-from player import PLAYER_COLLIDER_RADIUS
+from player import PLAYER_COLLIDER_RADIUS, PLAYER_OFFSET_FROM_WALL
 
 ENEMY_AGGRO_SPEED = 5
 ENEMY_WANDER_SPEED = 2
@@ -66,7 +66,46 @@ class BasicEnemy(PersistentRender, PathfindingEntity):
             self.animations.select_animation("chase_left")
 
     def aggro_avoid_walls(self, app, vec):
-        pass
+        self.wallbump(app, vec)
+
+        # TODO probably some continuous space pathfinding
+
+    def wallbump(self, app, vec):
+        next_pos = self.pos + vec
+
+        cur_row, cur_col = getRowColFromCoordinate(app, self.pos)
+
+        erow, ecol = getRowColFromCoordinate(
+            app, Vec2(next_pos.x + ENEMY_COLLIDER_RADIUS, next_pos.y))
+        wrow, wcol = getRowColFromCoordinate(
+            app, Vec2(next_pos.x - ENEMY_COLLIDER_RADIUS, next_pos.y))
+
+        if not app.grid[int(erow), int(ecol)]:
+            target = cur_col*app.cell_size + app.cell_size - \
+                ENEMY_COLLIDER_RADIUS - PLAYER_OFFSET_FROM_WALL
+            ideal_move = target - self.pos.x
+            vec.x = ideal_move
+
+        elif not app.grid[int(wrow), int(wcol)]:
+            target = cur_col*app.cell_size + ENEMY_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL
+            ideal_move = target - self.pos.x
+            vec.x = ideal_move
+
+        nrow, ncol = getRowColFromCoordinate(
+            app, Vec2(next_pos.x, next_pos.y - ENEMY_COLLIDER_RADIUS))
+        srow, scol = getRowColFromCoordinate(
+            app, Vec2(next_pos.x, next_pos.y + ENEMY_COLLIDER_RADIUS))
+
+        if not app.grid[int(nrow), int(ncol)]:
+            target = cur_row*app.cell_size + ENEMY_COLLIDER_RADIUS + PLAYER_OFFSET_FROM_WALL
+            ideal_move = target - self.pos.y
+            vec.y = ideal_move
+
+        elif not app.grid[int(srow), int(scol)]:
+            target = cur_row*app.cell_size + app.cell_size - \
+                ENEMY_COLLIDER_RADIUS - PLAYER_OFFSET_FROM_WALL
+            ideal_move = target - self.pos.y
+            vec.y = ideal_move
 
     def move_toward_destination(self, app):
         completed, (drow, dcol) = self.path_tweener.move_toward_target(
@@ -161,13 +200,13 @@ def hasLineOfSight(app, source, target):
     current_pos = source
 
     while (target - current_pos).distanceSquared() > app.cell_size ** 2:
-        current_pos += step
-
         row, col = getRowColFromCoordinate(app, current_pos)
 
         # no idea why sometimes it doesn't return an int,
         # floor division is weird.
         if not app.grid[int(row), int(col)]:
             return False
+
+        current_pos += step
 
     return True

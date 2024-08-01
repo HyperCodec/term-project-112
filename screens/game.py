@@ -220,10 +220,6 @@ def game_onStep(app):
 
 
 def game_onKeyPress(app, key):
-    # testing
-    if key == 'm':
-        loseGame(app)
-
     if key == 'f':
         if app.player_hiding:
             app.player_hiding = False
